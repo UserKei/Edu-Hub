@@ -1,0 +1,84 @@
+@startuml Teacher
+left to right direction
+skinparam packageStyle rectangle
+
+actor "教师" as Teacher
+
+package "用户系统" {
+    usecase "登录" as UC_Login
+    usecase "注册 (需邀请码)" as UC_Register
+    
+    usecase "个人信息管理" as UC_Profile
+    usecase "更换头像" as UC_Avatar
+    usecase "修改密码" as UC_Pwd
+    
+    ' 关系
+    UC_Profile <.. UC_Avatar : <<extend>>
+    UC_Profile <.. UC_Pwd : <<extend>>
+}
+
+package "教学管理系统" {
+    ' --- 核心：课程生产 ---
+    usecase "发布新课程" as UC_Create
+    usecase "管理我的课程" as UC_Manage
+    
+    ' --- 抽象出的公共编辑功能 (Include) ---
+    usecase "编辑课程基本信息" as UC_EditInfo
+    note bottom of UC_EditInfo : 标题、简介、封面
+    
+    usecase "管理章节与内容" as UC_EditChapter
+    note bottom of UC_EditChapter : 核心逻辑：\n1. 上传章节视频/课件\n2. <strong>支持最多3级目录嵌套</strong>\n(章 -> 节 -> 小节)
+    
+    ' --- 核心：考试与数据 ---
+    usecase "发布试卷" as UC_Exam
+    usecase "查看学生成绩统计" as UC_Stats
+
+    ' --- 核心：课程内互动 (你新增的部分) ---
+    usecase "浏览课程/章节相关帖子" as UC_ViewCoursePosts
+    note bottom of UC_ViewCoursePosts : 在课程管理后台\n直接查看关联的帖子
+    usecase "回复帖子" as UC_ReplyInner
+}
+
+package "论坛系统" {
+    ' --- 社区互动 ---
+    usecase "发表帖子" as UC_Post
+    usecase "选择关联我的课程/章节" as UC_LinkCourse
+    
+    usecase "浏览论坛" as UC_BrowseForum
+    usecase "回复帖子" as UC_ReplyForum
+}
+
+' === 连线关系 ===
+
+' 1. 用户基础
+Teacher --> UC_Login
+Teacher --> UC_Register
+Teacher --> UC_Profile
+
+' 2. 教学管理 - 课程
+Teacher --> UC_Create
+Teacher --> UC_Manage
+
+' 逻辑：发布和管理都复用同样的编辑能力
+UC_Create ..> UC_EditInfo : <<include>>
+UC_Create ..> UC_EditChapter : <<include>>
+UC_Manage ..> UC_EditInfo : <<include>>
+UC_Manage ..> UC_EditChapter : <<include>>
+
+' 2. 教学管理 - 其他
+Teacher --> UC_Exam
+Teacher --> UC_Stats
+
+' 2. 教学管理 - 内部互动
+Teacher --> UC_ViewCoursePosts
+UC_ViewCoursePosts <.. UC_ReplyInner : <<extend>>
+
+' 3. 论坛系统 - 外部互动
+Teacher --> UC_Post
+' 发帖时可选关联课程
+UC_Post <.. UC_LinkCourse : <<extend>>
+
+Teacher --> UC_BrowseForum
+UC_BrowseForum <.. UC_ReplyForum : <<extend>>
+
+@enduml

@@ -1,0 +1,74 @@
+@startuml Admin
+left to right direction
+skinparam packageStyle rectangle
+
+actor "普通管理员" as Admin
+actor "超级管理员" as SuperAdmin
+
+' 继承关系
+Admin <|-- SuperAdmin
+
+package "系统入口" {
+    usecase "管理员登录" as UC_Login
+}
+
+' === 新增：管理员的个人维护 ===
+package "个人中心 (通用)" {
+    usecase "修改我的密码" as UC_ChangeSelfPwd
+    usecase "查看/修改个人信息" as UC_MyProfile
+    
+    ' 逻辑：修改密码是个人信息的扩展
+    UC_MyProfile <.. UC_ChangeSelfPwd : <<extend>>
+}
+
+package "账号管理 (特权)" {
+    ' 超级管理员特权
+    usecase "管理管理员账号" as UC_ManageAdmin
+    note right of UC_ManageAdmin : 增删改查普通管理员
+
+    ' 普通管理员特权
+    usecase "添加教师账号" as UC_AddTeacher
+    usecase "查看用户列表" as UC_ViewUsers
+    
+    usecase "搜索用户" as UC_SearchUser
+    usecase "封禁/解封用户" as UC_Ban
+    
+    ' !!! 关键点：重置别人密码 !!!
+    usecase "重置用户密码" as UC_ResetOtherPwd
+    
+    UC_ViewUsers <.. UC_SearchUser : <<extend>>
+    UC_ViewUsers <.. UC_Ban : <<extend>>
+    UC_ViewUsers <.. UC_ResetOtherPwd : <<extend>>
+}
+
+package "内容监管" {
+    usecase "课程管理(全局)" as UC_CourseAdmin
+    usecase "强制下架课程" as UC_CourseDown
+    UC_CourseAdmin <.. UC_CourseDown : <<extend>>
+
+    usecase "帖子管理(全局)" as UC_PostAdmin
+    usecase "强制下架帖子" as UC_PostDelete
+    UC_PostAdmin <.. UC_PostDelete : <<extend>>
+}
+
+package "系统运营" {
+    usecase "发布系统公告" as UC_Notice
+}
+
+' === 连线 ===
+
+' 基础功能
+Admin --> UC_Login
+Admin --> UC_MyProfile 
+
+' 业务功能
+Admin --> UC_AddTeacher
+Admin --> UC_ViewUsers
+Admin --> UC_CourseAdmin
+Admin --> UC_PostAdmin
+Admin --> UC_Notice
+
+' 超级管理员独有
+SuperAdmin --> UC_ManageAdmin
+
+@enduml

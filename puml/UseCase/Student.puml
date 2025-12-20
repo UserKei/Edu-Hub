@@ -1,0 +1,83 @@
+@startuml Student
+left to right direction
+skinparam packageStyle rectangle
+
+actor "学生" as Student
+
+package "用户系统" {
+    usecase "登录/注册" as UC_Auth
+    usecase "个人信息管理" as UC_Profile
+    
+    usecase "更换头像" as UC_Avatar
+    usecase "修改密码" as UC_Pwd
+    
+    ' 关系
+    UC_Profile <.. UC_Avatar : <<extend>>
+    UC_Profile <.. UC_Pwd : <<extend>>
+}
+
+package "课程系统" {
+    ' --- 选课前 ---
+    usecase "浏览开放课程" as UC_Browse
+    usecase "搜索课程" as UC_Search
+    usecase "选修课程" as UC_Enroll
+    
+    ' --- 选课后 (学习) ---
+    usecase "查看我的课程" as UC_MyCourse
+    usecase "观看课程视频" as UC_Watch
+    usecase "参加在线考试" as UC_Exam
+    usecase "查看课程得分" as UC_Score
+    
+    ' --- 课程内互动 ---
+    usecase "发表评价/心得" as UC_Evaluate
+    note bottom of UC_Evaluate : 系统自动关联\n当前课程或章节
+
+    usecase "查看课程相关帖子" as UC_ViewCoursePost
+    usecase "回复课程帖子" as UC_ReplyCoursePost
+}
+
+package "论坛系统" {
+    ' --- 浏览 ---
+    usecase "浏览论坛" as UC_BrowseForum
+    usecase "回复帖子" as UC_Reply
+    
+    ' --- 发帖 (多级关联) ---
+    usecase "发表帖子" as UC_Post
+    usecase "选择关联课程" as UC_LinkCourse
+    usecase "选择关联章节" as UC_LinkChapter
+}
+
+' === 连线关系 ===
+
+' 1. 用户基础
+Student --> UC_Auth
+Student --> UC_Profile
+
+' 2. 课程浏览
+Student --> UC_Browse
+UC_Browse <.. UC_Search : <<extend>>
+UC_Browse <.. UC_Enroll : <<extend>>
+
+' 3. 课程学习
+Student --> UC_MyCourse
+UC_MyCourse ..> UC_Watch : <<include>>
+UC_MyCourse ..> UC_Exam : <<include>>
+UC_MyCourse ..> UC_Score : <<include>>
+
+' 课程内互动
+Student --> UC_Evaluate
+Student --> UC_ViewCoursePost
+UC_ViewCoursePost <.. UC_ReplyCoursePost : <<extend>>
+
+' 4. 论坛互动
+Student --> UC_BrowseForum
+UC_BrowseForum <.. UC_Reply : <<extend>>
+
+Student --> UC_Post
+
+' [核心逻辑] 发帖时的层级关联：
+' 发帖 -> (可选)关联课程 -> (可选)关联该课程下的章节
+UC_Post <.. UC_LinkCourse : <<extend>>
+UC_LinkCourse <.. UC_LinkChapter : <<extend>>
+
+@enduml
