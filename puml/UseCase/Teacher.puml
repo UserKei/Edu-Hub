@@ -19,9 +19,13 @@ package "用户系统" {
 
 package "教学管理系统" {
     ' --- 核心：课程生产 ---
-    usecase "发布新课程" as UC_Create
+    usecase "创建&发布新课程" as UC_Create
     usecase "管理我的课程" as UC_Manage
     
+    ' --- 新增：下架功能 ---
+    usecase "下架/上架课程" as UC_Offline
+    note bottom of UC_Offline : 状态流转：\nPUBLISHED <-> OFFLINE\n(注意：无法操作"封禁"状态)
+
     ' --- 抽象出的公共编辑功能 (Include) ---
     usecase "编辑课程基本信息" as UC_EditInfo
     note bottom of UC_EditInfo : 标题、简介、封面
@@ -33,7 +37,7 @@ package "教学管理系统" {
     usecase "发布试卷" as UC_Exam
     usecase "查看学生成绩统计" as UC_Stats
 
-    ' --- 核心：课程内互动 (你新增的部分) ---
+    ' --- 核心：课程内互动 ---
     usecase "浏览课程/章节相关帖子" as UC_ViewCoursePosts
     note bottom of UC_ViewCoursePosts : 在课程管理后台\n直接查看关联的帖子
     usecase "回复帖子" as UC_ReplyInner
@@ -64,6 +68,9 @@ UC_Create ..> UC_EditInfo : <<include>>
 UC_Create ..> UC_EditChapter : <<include>>
 UC_Manage ..> UC_EditInfo : <<include>>
 UC_Manage ..> UC_EditChapter : <<include>>
+
+' --- 新增连线：管理课程时可以选择下架 ---
+UC_Manage <.. UC_Offline : <<extend>>
 
 ' 2. 教学管理 - 其他
 Teacher --> UC_Exam

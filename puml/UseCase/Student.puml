@@ -18,7 +18,7 @@ package "用户系统" {
 
 package "课程系统" {
     ' --- 选课前 ---
-    usecase "浏览开放课程" as UC_Browse
+    usecase "浏览开放(public)课程" as UC_Browse
     usecase "搜索课程" as UC_Search
     usecase "选修课程" as UC_Enroll
     

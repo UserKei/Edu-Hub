@@ -12,42 +12,48 @@ package "系统入口" {
     usecase "管理员登录" as UC_Login
 }
 
-' === 新增：管理员的个人维护 ===
+' === 个人中心 ===
 package "个人中心 (通用)" {
     usecase "修改我的密码" as UC_ChangeSelfPwd
     usecase "查看/修改个人信息" as UC_MyProfile
     
-    ' 逻辑：修改密码是个人信息的扩展
     UC_MyProfile <.. UC_ChangeSelfPwd : <<extend>>
 }
 
-package "账号管理 (特权)" {
+package "账号与权限管理" {
     ' 超级管理员特权
     usecase "管理管理员账号" as UC_ManageAdmin
-    note right of UC_ManageAdmin : 增删改查普通管理员
+    note right of UC_ManageAdmin : 只有超管可以\n直接新增/删除管理员
 
-    ' 普通管理员特权
-    usecase "添加教师账号" as UC_AddTeacher
+    ' 普通管理员职责
+    usecase "生成教师注册邀请码" as UC_GenInviteCode
+    note bottom of UC_GenInviteCode : 对应 InviteCode 表\n生成码给老师去注册
+    
     usecase "查看用户列表" as UC_ViewUsers
-    
     usecase "搜索用户" as UC_SearchUser
-    usecase "封禁/解封用户" as UC_Ban
+    usecase "封禁/解封用户账号" as UC_BanUser
     
-    ' !!! 关键点：重置别人密码 !!!
     usecase "重置用户密码" as UC_ResetOtherPwd
     
     UC_ViewUsers <.. UC_SearchUser : <<extend>>
-    UC_ViewUsers <.. UC_Ban : <<extend>>
+    UC_ViewUsers <.. UC_BanUser : <<extend>>
     UC_ViewUsers <.. UC_ResetOtherPwd : <<extend>>
+    
+    ' 关联：生成邀请码是管理流程的一部分
+    UC_ViewUsers <.. UC_GenInviteCode : <<extend>>
 }
 
-package "内容监管" {
+package "内容监管 (核心修改)" {
     usecase "课程管理(全局)" as UC_CourseAdmin
-    usecase "强制下架课程" as UC_CourseDown
-    UC_CourseAdmin <.. UC_CourseDown : <<extend>>
+    
+    ' --- 修改点：明确区分“封禁”与教师的“下架” ---
+    usecase "封禁违规课程" as UC_BanCourse
+    note bottom of UC_BanCourse : **关键区别**：\n操作后状态变为 BANNED\n教师无法自行解封\n(教师自己点的叫“下架” OFFLINE)
+
+    UC_CourseAdmin <.. UC_BanCourse : <<extend>>
 
     usecase "帖子管理(全局)" as UC_PostAdmin
-    usecase "强制下架帖子" as UC_PostDelete
+    usecase "删除/封禁帖子" as UC_PostDelete
     UC_PostAdmin <.. UC_PostDelete : <<extend>>
 }
 
@@ -62,7 +68,7 @@ Admin --> UC_Login
 Admin --> UC_MyProfile 
 
 ' 业务功能
-Admin --> UC_AddTeacher
+Admin --> UC_GenInviteCode
 Admin --> UC_ViewUsers
 Admin --> UC_CourseAdmin
 Admin --> UC_PostAdmin

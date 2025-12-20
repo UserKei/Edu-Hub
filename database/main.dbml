@@ -1,0 +1,165 @@
+// ===================================
+// 1. 枚举定义
+// ===================================
+
+Enum Role {
+  STUDENT       [note: "学生"]
+  TEACHER       [note: "教师 - 需通过邀请码注册"]
+  ADMIN         [note: "管理员 - 由超级管理员直接创建"]
+  SUPER_ADMIN   [note: "超级管理员"]
+}
+
+Enum CourseStatus {
+  DRAFT         [note: "草稿 - 仅老师可见"]
+  PUBLISHED     [note: "已发布 - 正常可见，允许加入/学习"]
+  OFFLINE       [note: "已下架 - 老师主动维护，老学生不可学"]
+  ARCHIVED      [note: "已归档 - 课程结束，老学生可看但在只读模式，新学生不可加入"]
+  BANNED        [note: "已封禁 - 管理员操作，完全锁定"]
+}
+
+Enum CourseType {
+  PUBLIC        [note: "公开课 - 列表可见，直接选修"]
+  PRIVATE       [note: "私有课 - 需输入课程邀请码"]
+}
+
+// ===================================
+// 2. 表结构定义
+// ===================================
+
+Table User {
+  id int [pk, increment]
+  
+  // --- 账号密码登录 ---
+  username varchar [unique, not null, note: "登录账号 (唯一ID)"]
+  password varchar [not null]
+  nickname varchar [note: "用户昵称 (显示名)"]
+  // -----------------
+  
+  avatar varchar
+  role Role [default: 'STUDENT']
+  created_at datetime [default: `now()`]
+  updated_at datetime
+  
+  Note: "用户表。管理员(ADMIN)需由超级管理员(SUPER_ADMIN)直接添加，不通过注册流程。"
+}
+
+Table InviteCode {
+  id int [pk, increment]
+  code varchar [unique, not null, note: "仅用于注册教师账号的邀请码"]
+  is_used boolean [default: false]
+  
+  // --- 修改注：移除了 role_type 字段，因为逻辑限定只能是 TEACHER ---
+  
+  created_at datetime [default: `now()`]
+  
+  Note: "教师注册邀请码表。仅用于将新注册用户提升为 TEACHER 角色。"
+}
+
+Table Course {
+  id int [pk, increment]
+  title varchar [not null]
+  description text
+  cover_image varchar
+  
+  // --- 课程类型逻辑 ---
+  type CourseType [default: 'PUBLIC']
+  access_code varchar [null, note: "私有课程必填，相当于入场券密码"]
+  // -----------------
+  
+  status CourseStatus [default: 'DRAFT']
+  
+  // --- 新增：封禁原因 ---
+  ban_reason varchar [null, note: "仅在 status=BANNED 时有值，记录管理员封禁的具体原因"]
+  // -------------------
+
+  teacher_id int [not null]
+  created_at datetime [default: `now()`]
+  updated_at datetime
+  
+  Note: "课程表。私有课需要 access_code 才能加入；ban_reason 记录违规原因"
+}
+
+Table Chapter {
+  id int [pk, increment]
+  title varchar [not null]
+  content text [note: "图文内容"]
+  
+  // --- 资源区域 ---
+  video_url varchar [note: "视频地址"]
+  
+  // 既然不拆表，我们就约定：一节课对应一份资料。
+  // 如果资料多，请老师打包成 zip 上传。
+  resource_url varchar [null, note: "课件/资料链接"]
+  resource_name varchar [null, note: "课件文件名"]
+  // ----------------
+  
+  order int [default: 0]
+  
+  course_id int [not null]
+  parent_id int [null]
+  
+  Note: "章节表"
+}
+
+Table Enrollment {
+  id int [pk, increment]
+  student_id int [not null]
+  course_id int [not null]
+  grade float [note: "考试成绩"]
+  progress int [default: 0]
+  joined_at datetime [default: `now()`]
+  
+  Note: "选课记录 (User <-> Course 多对多)"
+}
+
+Table Post {
+  id int [pk, increment]
+  title varchar [not null]
+  content text [not null]
+  published boolean [default: true]
+  
+  author_id int [not null]
+  course_id int [null]
+  chapter_id int [null]
+  
+  created_at datetime [default: `now()`]
+  updated_at datetime
+  
+  Note: "论坛帖子。可关联课程或章节"
+}
+
+Table Comment {
+  id int [pk, increment]
+  content text [not null]
+  author_id int [not null]
+  post_id int [not null]
+  created_at datetime [default: `now()`]
+  
+  Note: "帖子回复"
+}
+
+// ===================================
+// 3. 关系连线
+// ===================================
+
+// 用户 -> 课程 (老师发布的课)
+Ref: User.id < Course.teacher_id
+
+// 课程 -> 章节 (级联删除)
+Ref: Course.id < Chapter.course_id [delete: cascade]
+
+// 章节 -> 子章节 (自关联)
+Ref: Chapter.id - Chapter.parent_id
+
+// 选课 (多对多)
+Ref: User.id < Enrollment.student_id
+Ref: Course.id < Enrollment.course_id
+
+// 帖子关系
+Ref: User.id < Post.author_id
+Ref: Course.id < Post.course_id [delete: cascade]
+Ref: Chapter.id < Post.chapter_id [delete: cascade]
+
+// 评论关系
+Ref: User.id < Comment.author_id
+Ref: Post.id < Comment.post_id [delete: cascade]
