@@ -17,7 +17,7 @@
 
 ## Backend 
 
-1. TypeScript Node.js Express
+1. JavaScript Node.js Express
 
 ## DataBase
 
@@ -25,4 +25,4 @@
 
 ## Frontend
 
-1. Next.js React
+1. Vue.js
