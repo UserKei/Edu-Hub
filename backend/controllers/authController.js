@@ -51,6 +51,10 @@ exports.register = async (req, res) => {
         return res.status(400).json({ message: '邀请码无效' });
       }
 
+      if (codeRecord.expires_at && new Date() > new Date(codeRecord.expires_at)) {
+        return res.status(400).json({ message: '邀请码已过期' });
+      }
+
       if (codeRecord.is_used) {
         return res.status(400).json({ message: '邀请码已被使用' });
       }
@@ -104,6 +108,11 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ where: { username } });
     if (!user) {
       return res.status(401).json({ message: '用户名或密码错误' });
+    }
+
+    // 检查用户状态
+    if (user.status === 'BANNED') {
+      return res.status(403).json({ message: '账号已被封禁，请联系管理员' });
     }
 
     // 3. 验证密码 (明文比较)
