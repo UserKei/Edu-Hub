@@ -1,0 +1,62 @@
+@startuml 创建发布课程时序图
+title 创建发布课程时序图
+
+actor Teacher as "教师"
+participant Frontend as "前端页面"
+participant Backend as "后端服务"
+database DB as "数据库"
+
+== 创建草稿 ==
+Teacher -> Frontend: 点击"创建课程"
+activate Frontend
+Frontend -> Teacher: 显示创建表单
+
+Teacher -> Frontend: 输入基本信息\n(标题, 简介, 封面)
+Frontend -> Backend: POST /api/courses (status=DRAFT)
+activate Backend
+Backend -> DB: 插入课程记录
+activate DB
+DB --> Backend: 返回课程ID
+deactivate DB
+Backend --> Frontend: 返回创建成功 (CourseID)
+deactivate Backend
+
+== 添加章节 ==
+loop 添加章节
+    Teacher -> Frontend: 添加章节/子章节\n(标题, 内容, 视频/课件)
+    Frontend -> Backend: POST /api/courses/{id}/chapters
+    activate Backend
+    Backend -> DB: 插入章节记录
+    activate DB
+    DB --> Backend: 成功
+    deactivate DB
+    Backend --> Frontend: 返回章节添加成功
+    deactivate Backend
+end
+
+== 发布课程 ==
+Teacher -> Frontend: 点击"发布课程"
+Frontend -> Backend: PATCH /api/courses/{id}/publish
+activate Backend
+
+Backend -> DB: 查询课程完整性\n(是否有章节等)
+activate DB
+DB --> Backend: 返回课程数据
+deactivate DB
+
+alt 数据不完整
+    Backend --> Frontend: 返回错误 (请先添加章节)
+    Frontend --> Teacher: 提示错误
+else 数据完整
+    Backend -> DB: 更新状态 status='PUBLISHED'
+    activate DB
+    DB --> Backend: 成功
+    deactivate DB
+    Backend --> Frontend: 返回发布成功
+    Frontend --> Teacher: 跳转至课程详情页
+end
+
+deactivate Backend
+deactivate Frontend
+
+@enduml

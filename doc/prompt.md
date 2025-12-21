@@ -73,6 +73,48 @@
 ### 第四步：配置路由 (Routes)
 - **操作**: 在 `routes/authRoutes.js` 中添加 `/login` 路由。
 
+# 后端开发计划 - 课程与章节管理
+
+## 1. 目标
+实现课程的创建、发布以及章节的增删改查。章节需支持无限层级（建议限制3级），并严格区分目录节点和内容节点。
+
+## 2. 实施步骤
+
+### 第一步：定义模型 (Models)
+- **操作**: 
+    - `models/Course.js`: 对应 `Course` 表。
+    - `models/Chapter.js`: 对应 `Chapter` 表，包含自关联 `parent_id`。
+- **原因**: 映射数据库表结构。
+
+### 第二步：实现课程管理逻辑 (CourseController)
+- **操作**: 创建 `controllers/courseController.js`。
+    - `createCourse`: 创建课程草稿。
+    - `publishCourse`: 发布课程（需检查完整性）。
+    - `getCourseList`: 获取课程列表。
+    - `getCourseDetail`: 获取课程详情。
+
+### 第三步：实现章节管理逻辑 (ChapterController)
+- **操作**: 创建 `controllers/chapterController.js`。
+    - `addChapter`: 添加章节。
+        - **约束**: 如果父节点已有内容，禁止添加子节点（或提示）。
+    - `updateChapter`: 更新章节信息。
+    - `getChapters`: 获取树形结构的章节列表。
+        - **逻辑**: 递归构建树，标记 `type: FOLDER/FILE`。
+
+### 第四步：配置路由 (Routes)
+- **操作**: 创建 `routes/courseRoutes.js`。
+    - `/api/courses` (POST, GET)
+    - `/api/courses/:id` (GET)
+    - `/api/courses/:id/publish` (PATCH)
+    - `/api/courses/:id/chapters` (POST, GET)
+
+### 第五步：集成路由
+- **操作**: 在 `index.js` 中注册 `courseRoutes`。
+
+## 3. 为什么选择这个方案？
+1.  **树形结构**: 章节管理的核心是层级关系，通过递归查询和构建树形 JSON，完美适配前端侧边栏需求。
+2.  **业务约束**: 在 Controller 层强制执行“目录节点无内容”的规则，保证数据逻辑的一致性。
+
 ## 3. 为什么选择这个方案？
 1.  **JWT**: 无状态认证，适合前后端分离架构。
 2.  **安全性**: 虽然密码未加密存储（按需求），但 Token 机制保证了后续请求的安全性。
