@@ -3,7 +3,7 @@
 ## 接口描述
 用户注册接口，支持学生和教师两种角色。教师注册需要提供有效的邀请码。
 
-- **URL**: `/api/register`
+- **URL**: `/api/auth/register`
 - **Method**: `POST`
 - **Content-Type**: `application/json`
 
@@ -80,6 +80,7 @@
 - "教师注册需要邀请码"
 - "邀请码无效"
 - "邀请码已被使用"
+- "邀请码已过期"
 
 ### 服务器错误 (500 Internal Server Error)
 ```json
