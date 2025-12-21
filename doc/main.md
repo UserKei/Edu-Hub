@@ -257,10 +257,14 @@ sequenceDiagram
 
 ## 5. API 接口概览
 
+详细接口文档请参考：
+- [注册接口文档](api/register.md)
+- [登录接口文档](api/login.md)
+
 | 模块 | 方法 | 路径 | 描述 |
 |---|---|---|---|
-| **Auth** | POST | `/api/auth/login` | 用户登录 |
-| | POST | `/api/auth/register` | 用户注册 |
+| **Auth** | POST | `/api/login` | 用户登录 |
+| | POST | `/api/register` | 用户注册 |
 | **Courses** | GET | `/api/courses` | 获取课程列表 |
 | | GET | `/api/courses/:id` | 获取课程详情 |
 | | POST | `/api/courses` | 创建课程 (讲师/管理员) |

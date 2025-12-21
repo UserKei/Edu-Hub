@@ -1,0 +1,49 @@
+@startuml 登录时序图
+title 登录时序图
+
+actor User as "用户"
+participant Frontend as "前端页面"
+participant Backend as "后端服务"
+database DB as "数据库"
+
+User -> Frontend: 输入用户名和密码
+activate Frontend
+
+Frontend -> Frontend: 验证输入格式\n(用户名3-20位, 密码6-32位)
+alt 格式无效
+    Frontend --> User: 显示错误提示
+else 格式有效
+    Frontend -> Backend: POST /api/login
+    activate Backend
+
+    Backend -> Backend: 验证输入格式
+    alt 格式无效
+        Backend --> Frontend: 返回错误 (格式不符)
+        Frontend --> User: 显示错误提示
+    else 格式有效
+        Backend -> DB: 查询用户名
+        activate DB
+        DB --> Backend: 返回用户信息
+        deactivate DB
+
+        alt 用户不存在
+            Backend --> Frontend: 返回错误 (用户不存在)
+            Frontend --> User: 显示错误提示
+        else 用户存在
+            Backend -> Backend: 验证密码
+            
+            alt 密码错误
+                Backend --> Frontend: 返回错误 (密码错误)
+                Frontend --> User: 显示错误提示
+            else 密码正确
+                Backend -> Backend: 生成 JWT Token
+                Backend --> Frontend: 返回成功 (Token + 用户信息)
+                Frontend --> User: 跳转到仪表盘/首页
+            end
+        end
+    end
+    deactivate Backend
+end
+deactivate Frontend
+
+@enduml

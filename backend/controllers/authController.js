@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const InviteCode = require('../models/InviteCode');
+const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
   try {
@@ -79,6 +80,59 @@ exports.register = async (req, res) => {
 
   } catch (error) {
     console.error('Registration error:', error);
+    res.status(500).json({ message: '服务器内部错误' });
+  }
+};
+
+exports.login = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // 1. 输入验证
+    // 用户名: 3-20位，仅允许字母、数字、下划线
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!username || !usernameRegex.test(username) || username.length < 3 || username.length > 20) {
+      return res.status(400).json({ message: '用户名只能包含字母、数字和下划线，长度 3-20 位' });
+    }
+
+    // 密码: 6-32位
+    if (!password || password.length < 6 || password.length > 32) {
+      return res.status(400).json({ message: '密码长度需在 6-32 个字符之间' });
+    }
+
+    // 2. 查询用户
+    const user = await User.findOne({ where: { username } });
+    if (!user) {
+      return res.status(401).json({ message: '用户名或密码错误' });
+    }
+
+    // 3. 验证密码 (明文比较)
+    if (user.password !== password) {
+      return res.status(401).json({ message: '用户名或密码错误' });
+    }
+
+    // 4. 生成 JWT Token
+    const token = jwt.sign(
+      { id: user.id, username: user.username, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // 5. 返回结果
+    res.json({
+      message: '登录成功',
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        nickname: user.nickname,
+        role: user.role,
+        avatar: user.avatar
+      }
+    });
+
+  } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ message: '服务器内部错误' });
   }
 };
