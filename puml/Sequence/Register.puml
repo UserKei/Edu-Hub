@@ -1,0 +1,63 @@
+@startuml 注册时序图
+title 注册时序图
+
+actor User as "用户"
+participant Frontend as "前端页面"
+participant Backend as "后端服务"
+database DB as "数据库"
+
+User -> Frontend: 输入注册信息\n(用户名, 密码, 昵称, 角色, [邀请码])
+activate Frontend
+
+Frontend -> Backend: POST /api/register
+activate Backend
+
+Backend -> DB: 查询用户名是否存在
+activate DB
+DB --> Backend: 返回查询结果
+deactivate DB
+
+alt 用户名已存在
+    Backend --> Frontend: 返回错误 (用户名已存在)
+    Frontend --> User: 显示错误提示
+else 用户名可用
+
+    alt 角色 == 教师
+        Backend -> DB: 查询邀请码是否有效
+        activate DB
+        DB --> Backend: 返回邀请码状态
+        deactivate DB
+        
+        alt 邀请码无效
+            Backend --> Frontend: 返回错误 (邀请码无效)
+            Frontend --> User: 显示错误提示
+        else 邀请码有效
+            Backend -> DB: 创建新用户
+            activate DB
+            DB --> Backend: 成功
+            deactivate DB
+            
+            Backend -> DB: 更新邀请码状态 (已使用)
+            activate DB
+            DB --> Backend: 成功
+            deactivate DB
+            
+            Backend --> Frontend: 返回注册成功
+            Frontend --> User: 跳转登录页
+        end
+    else 角色 == 学生
+        Backend -> DB: 创建新用户
+        activate DB
+        DB --> Backend: 成功
+        deactivate DB
+        
+        Backend --> Frontend: 返回注册成功
+        Frontend --> User: 跳转登录页
+    end
+
+end
+
+deactivate Backend
+deactivate Frontend
+
+@enduml
