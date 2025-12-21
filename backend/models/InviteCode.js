@@ -16,6 +16,14 @@ const InviteCode = sequelize.define('InviteCode', {
   is_used: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  created_by: {
+    type: DataTypes.INTEGER,
+    comment: '创建该邀请码的管理员ID'
+  },
+  expires_at: {
+    type: DataTypes.DATE,
+    comment: '过期时间'
   }
 }, {
   tableName: 'InviteCode',

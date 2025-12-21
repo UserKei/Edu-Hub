@@ -28,6 +28,11 @@ const User = sequelize.define('User', {
     type: DataTypes.ENUM('STUDENT', 'TEACHER', 'ADMIN', 'SUPER_ADMIN'),
     defaultValue: 'STUDENT',
     comment: '角色'
+  },
+  status: {
+    type: DataTypes.ENUM('ACTIVE', 'BANNED'),
+    defaultValue: 'ACTIVE',
+    comment: '账号状态'
   }
 }, {
   tableName: 'User',
