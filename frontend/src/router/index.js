@@ -5,6 +5,9 @@ import RegisterView from '../views/RegisterView.vue'
 import AdminLayout from '../views/admin/AdminLayout.vue'
 import UserManagement from '../views/admin/UserManagement.vue'
 import InviteCodeManagement from '../views/admin/InviteCodeManagement.vue'
+import PostList from '../views/forum/PostList.vue'
+import PostDetail from '../views/forum/PostDetail.vue'
+import PostEditor from '../views/forum/PostEditor.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,6 +16,22 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: CourseEditor,
+    },
+    {
+      path: '/forum',
+      name: 'forum',
+      component: PostList
+    },
+    {
+      path: '/forum/new',
+      name: 'new-post',
+      component: PostEditor,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/forum/:id',
+      name: 'post-detail',
+      component: PostDetail
     },
     {
       path: '/login',

@@ -2,6 +2,10 @@
   <div class="course-editor">
     <div class="header">
       <h1>课程编辑器 (MVP)</h1>
+      <div class="nav-links">
+        <router-link to="/forum" class="nav-link">讨论区</router-link>
+        <router-link to="/login" class="nav-link">登录/注册</router-link>
+      </div>
       <div v-if="courseId" class="header-actions">
         <span class="status-badge">{{ course?.status }}</span>
         <button @click="publishCourse" :disabled="course?.status === 'PUBLISHED'">发布课程</button>
@@ -192,6 +196,25 @@ const selectChapter = (chapter) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+.nav-links {
+  display: flex;
+  gap: 15px;
+  margin-right: auto;
+  margin-left: 20px;
+}
+.nav-link {
+  text-decoration: none;
+  color: #42b983;
+  font-weight: bold;
 }
 .header-actions {
   display: flex;
