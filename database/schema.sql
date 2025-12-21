@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS User (
     nickname VARCHAR(255) COMMENT '用户昵称 (显示名)',
     avatar VARCHAR(255),
     role ENUM('STUDENT', 'TEACHER', 'ADMIN', 'SUPER_ADMIN') DEFAULT 'STUDENT' COMMENT '角色',
+    status ENUM('ACTIVE', 'BANNED') DEFAULT 'ACTIVE' COMMENT '账号状态',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) COMMENT='用户表。管理员(ADMIN)需由超级管理员(SUPER_ADMIN)直接添加，不通过注册流程。';
@@ -18,6 +19,8 @@ CREATE TABLE IF NOT EXISTS InviteCode (
     id INT AUTO_INCREMENT PRIMARY KEY,
     code VARCHAR(255) NOT NULL UNIQUE COMMENT '仅用于注册教师账号的邀请码',
     is_used BOOLEAN DEFAULT FALSE,
+    created_by INT COMMENT '创建该邀请码的管理员ID',
+    expires_at DATETIME COMMENT '过期时间',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) COMMENT='教师注册邀请码表。仅用于将新注册用户提升为 TEACHER 角色。';
 

@@ -17,6 +17,11 @@ Enum Role {
   SUPER_ADMIN   [note: "超级管理员"]
 }
 
+Enum UserStatus {
+  ACTIVE        [note: "正常"]
+  BANNED        [note: "已封禁"]
+}
+
 Enum CourseStatus {
   DRAFT         [note: "草稿 - 仅老师可见"]
   PUBLISHED     [note: "已发布 - 正常可见，允许加入/学习"]
@@ -45,6 +50,7 @@ Table User {
   
   avatar varchar
   role Role [default: 'STUDENT']
+  status UserStatus [default: 'ACTIVE']
   created_at datetime [default: `now()`]
   updated_at datetime
   
@@ -55,6 +61,8 @@ Table InviteCode {
   id int [pk, increment]
   code varchar [unique, not null, note: "仅用于注册教师账号的邀请码"]
   is_used boolean [default: false]
+  created_by int [note: "创建该邀请码的管理员ID"]
+  expires_at datetime [note: "过期时间"]
   
   // --- 修改注：移除了 role_type 字段，因为逻辑限定只能是 TEACHER ---
   
