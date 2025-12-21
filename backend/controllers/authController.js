@@ -5,6 +5,33 @@ exports.register = async (req, res) => {
   try {
     const { username, password, nickname, role, inviteCode } = req.body;
 
+    // 0. 输入验证
+    // 用户名: 3-20位，仅允许字母、数字、下划线
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!username || !usernameRegex.test(username) || username.length < 3 || username.length > 20) {
+      return res.status(400).json({ message: '用户名只能包含字母、数字和下划线，长度 3-20 位' });
+    }
+
+    // 密码: 6-32位，仅允许字母、数字和特殊字符
+    const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
+    if (!password || password.length < 6 || password.length > 32) {
+      return res.status(400).json({ message: '密码长度需在 6-32 个字符之间' });
+    }
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ message: '密码只能包含字母、数字和特殊字符' });
+    }
+
+    // 昵称: 2-20位，支持中文、字母、数字、下划线
+    const nicknameRegex = /^[\u4e00-\u9fa5a-zA-Z0-9_]+$/;
+    if (nickname) {
+      if (nickname.length < 2 || nickname.length > 20) {
+        return res.status(400).json({ message: '昵称长度需在 2-20 个字符之间' });
+      }
+      if (!nicknameRegex.test(nickname)) {
+        return res.status(400).json({ message: '昵称只能包含中文、字母、数字和下划线' });
+      }
+    }
+
     // 1. 检查用户名是否已存在
     const existingUser = await User.findOne({ where: { username } });
     if (existingUser) {
