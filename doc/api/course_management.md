@@ -359,3 +359,180 @@
   "message": "课程不存在"
 }
 ```
+
+---
+
+## 8. Get Course List
+
+- **URL**: `GET /api/courses`
+- **Query Params**: None (currently)
+
+### 成功响应 (200 OK)
+```json
+[
+  {
+    "id": 1,
+    "title": "2025年全栈开发实战",
+    "description": "从零开始学习 Node.js, Vue 3 和 MySQL，构建一个完整的在线教育平台。",
+    "cover_image": "https://example.com/cover.jpg",
+    "type": "PUBLIC",
+    "status": "PUBLISHED",
+    "teacher_id": 1,
+    "created_at": "2025-12-21T10:00:00.000Z",
+    "updated_at": "2025-12-21T10:00:00.000Z"
+  }
+]
+```
+
+---
+
+## 9. Get Enrolled Courses (Student)
+
+- **URL**: `GET /api/courses/enrolled`
+- **Headers**: `Authorization: Bearer <token>`
+
+### 成功响应 (200 OK)
+```json
+[
+  {
+    "id": 1,
+    "student_id": 2,
+    "course_id": 1,
+    "grade": null,
+    "progress": 0,
+    "joined_at": "2025-12-27T10:00:00.000Z",
+    "course": {
+      "id": 1,
+      "title": "2025年全栈开发实战",
+      "description": "...",
+      "cover_image": "...",
+      "type": "PUBLIC",
+      "status": "PUBLISHED",
+      "teacher_id": 1,
+      "created_at": "...",
+      "updated_at": "..."
+    }
+  }
+]
+```
+
+---
+
+## 10. Enroll Course (Student)
+
+- **URL**: `POST /api/courses/:id/enroll`
+- **Headers**: `Authorization: Bearer <token>`
+- **Content-Type**: `application/json`
+
+### 请求体示例 (私有课程需要)
+```json
+{
+  "access_code": "VIP888"
+}
+```
+
+### 成功响应 (201 Created)
+```json
+{
+  "message": "选课成功",
+  "enrollment": {
+    "id": 1,
+    "student_id": 2,
+    "course_id": 1,
+    "grade": null,
+    "progress": 0,
+    "joined_at": "2025-12-27T10:00:00.000Z"
+  }
+}
+```
+
+### 成功响应 (200 OK - 已选修)
+```json
+{
+  "message": "已选修该课程",
+  "enrollment": {
+    "id": 1,
+    "student_id": 2,
+    "course_id": 1,
+    "grade": null,
+    "progress": 0,
+    "joined_at": "2025-12-27T10:00:00.000Z"
+  }
+}
+```
+
+### 错误响应 (403 Forbidden)
+
+**情况 1: 课程未发布**
+```json
+{
+  "message": "课程未发布或已下架"
+}
+```
+
+**情况 2: 邀请码错误**
+```json
+{
+  "message": "课程邀请码错误"
+}
+```
+
+### 错误响应 (404 Not Found)
+```json
+{
+  "message": "课程不存在"
+}
+```
+
+---
+
+## 11. Get Course Content (Student)
+
+- **URL**: `GET /api/courses/:id/content`
+- **Headers**: `Authorization: Bearer <token>`
+
+### 成功响应 (200 OK)
+```json
+{
+  "enrollment": {
+    "id": 1,
+    "student_id": 2,
+    "course_id": 1,
+    "grade": null,
+    "progress": 0,
+    "joined_at": "2025-12-27T10:00:00.000Z"
+  },
+  "chapters": [
+    {
+      "id": 1,
+      "title": "第一章",
+      "type": "FOLDER",
+      "content": null,
+      "video_url": null,
+      "resource_url": null,
+      "resource_name": null,
+      "order": 1,
+      "children": [
+        {
+          "id": 3,
+          "title": "1.1 安装 Node.js",
+          "type": "FILE",
+          "content": "...",
+          "video_url": "...",
+          "resource_url": "...",
+          "resource_name": "...",
+          "order": 1,
+          "children": []
+        }
+      ]
+    }
+  ]
+}
+```
+
+### 错误响应 (403 Forbidden)
+```json
+{
+  "message": "请先加入课程后再进行学习"
+}
+```

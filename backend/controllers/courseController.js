@@ -1,5 +1,6 @@
 const Course = require('../models/Course');
 const Chapter = require('../models/Chapter');
+const Enrollment = require('../models/Enrollment');
 
 exports.createCourse = async (req, res) => {
   try {
@@ -112,3 +113,122 @@ exports.getCourseDetail = async (req, res) => {
     res.status(500).json({ message: '服务器内部错误' });
   }
 };
+
+// 获取当前用户已选修的课程列表
+exports.getEnrolledCourses = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const enrollments = await Enrollment.findAll({
+      where: { student_id: userId },
+      include: [{
+        model: Course,
+        as: 'course'
+      }],
+      order: [['joined_at', 'DESC']]
+    });
+
+    res.json(enrollments);
+  } catch (error) {
+    console.error('Get enrolled courses error:', error);
+    res.status(500).json({ message: '服务器内部错误' });
+  }
+};
+
+// 学生选课
+exports.enrollCourse = async (req, res) => {
+  try {
+    const { id } = req.params; // course_id
+    const { access_code } = req.body;
+    const userId = req.user.id;
+
+    const course = await Course.findByPk(id);
+    if (!course) {
+      return res.status(404).json({ message: '课程不存在' });
+    }
+
+    if (course.status !== 'PUBLISHED') {
+      return res.status(403).json({ message: '课程未发布或已下架' });
+    }
+
+    // Check if already enrolled
+    const existingEnrollment = await Enrollment.findOne({
+      where: {
+        student_id: userId,
+        course_id: id
+      }
+    });
+
+    if (existingEnrollment) {
+      return res.status(200).json({ message: '已选修该课程', enrollment: existingEnrollment });
+    }
+
+    // Check access code for PRIVATE courses
+    if (course.type === 'PRIVATE') {
+      if (course.access_code !== access_code) {
+        return res.status(403).json({ message: '课程邀请码错误' });
+      }
+    }
+
+    const newEnrollment = await Enrollment.create({
+      student_id: userId,
+      course_id: id
+    });
+
+    res.status(201).json({ message: '选课成功', enrollment: newEnrollment });
+  } catch (error) {
+    console.error('Enroll course error:', error);
+    res.status(500).json({ message: '服务器内部错误' });
+  }
+};
+
+// 获取课程内容 (章节树) - 需检查选课状态
+exports.getCourseContent = async (req, res) => {
+  try {
+    const { id } = req.params; // course_id
+    const userId = req.user.id;
+
+    // Check enrollment
+    const enrollment = await Enrollment.findOne({
+      where: {
+        student_id: userId,
+        course_id: id
+      }
+    });
+
+    if (!enrollment) {
+      return res.status(403).json({ message: '请先加入课程后再进行学习' });
+    }
+
+    // Fetch chapters
+    const chapters = await Chapter.findAll({
+      where: { course_id: id },
+      order: [['order', 'ASC']],
+      raw: true
+    });
+
+    // Build tree
+    const buildTree = (items, parentId = null) => {
+      return items
+        .filter(item => item.parent_id === parentId)
+        .map(item => {
+          const children = buildTree(items, item.id);
+          let type = 'FILE';
+          if (children.length > 0) type = 'FOLDER';
+          
+          return {
+            ...item,
+            type,
+            children
+          };
+        });
+    };
+
+    const tree = buildTree(chapters);
+    res.json({ enrollment, chapters: tree });
+
+  } catch (error) {
+    console.error('Get course content error:', error);
+    res.status(500).json({ message: '服务器内部错误' });
+  }
+};
+

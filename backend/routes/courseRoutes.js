@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const courseController = require('../controllers/courseController');
 const chapterController = require('../controllers/chapterController');
+const { verifyToken } = require('../middleware/authMiddleware');
+
+// 学生端路由 (需认证) - 必须在 /:id 之前定义
+router.get('/enrolled', verifyToken, courseController.getEnrolledCourses);
 
 // 课程路由
 router.post('/', courseController.createCourse);
@@ -9,6 +13,10 @@ router.get('/', courseController.getCourseList);
 router.get('/:id', courseController.getCourseDetail);
 router.put('/:id', courseController.updateCourse);
 router.patch('/:id/publish', courseController.publishCourse);
+
+// 学生选课与学习 (需认证)
+router.post('/:id/enroll', verifyToken, courseController.enrollCourse);
+router.get('/:id/content', verifyToken, courseController.getCourseContent);
 
 // 章节路由
 router.post('/:course_id/chapters', chapterController.addChapter);
