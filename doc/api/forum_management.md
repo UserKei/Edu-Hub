@@ -45,6 +45,14 @@
 }
 ```
 
+### 错误响应 (500 Internal Server Error)
+
+```json
+{
+  "message": "服务器内部错误"
+}
+```
+
 ## 2. Get Post Detail
 
 - **URL**: `/api/posts/:id`
@@ -102,6 +110,14 @@
 }
 ```
 
+### 错误响应 (500 Internal Server Error)
+
+```json
+{
+  "message": "服务器内部错误"
+}
+```
+
 ## 3. Create Post
 
 - **URL**: `/api/posts`
@@ -146,6 +162,14 @@
 }
 ```
 
+### 错误响应 (500 Internal Server Error)
+
+```json
+{
+  "message": "服务器内部错误"
+}
+```
+
 ## 4. Delete Post
 
 - **URL**: `/api/posts/:id`
@@ -172,6 +196,22 @@
 ```json
 {
   "message": "无权删除此帖子"
+}
+```
+
+### 错误响应 (404 Not Found)
+
+```json
+{
+  "message": "帖子不存在"
+}
+```
+
+### 错误响应 (500 Internal Server Error)
+
+```json
+{
+  "message": "服务器内部错误"
 }
 ```
 
@@ -221,6 +261,22 @@
 }
 ```
 
+### 错误响应 (404 Not Found)
+
+```json
+{
+  "message": "帖子不存在"
+}
+```
+
+### 错误响应 (500 Internal Server Error)
+
+```json
+{
+  "message": "服务器内部错误"
+}
+```
+
 ## 6. Delete Comment
 
 - **URL**: `/api/comments/:id`
@@ -247,5 +303,21 @@
 ```json
 {
   "message": "无权删除此评论"
+}
+```
+
+### 错误响应 (404 Not Found)
+
+```json
+{
+  "message": "评论不存在"
+}
+```
+
+### 错误响应 (500 Internal Server Error)
+
+```json
+{
+  "message": "服务器内部错误"
 }
 ```

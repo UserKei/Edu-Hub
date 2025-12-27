@@ -2,7 +2,7 @@
 
 这里提供了用于测试课程创建、章节添加和课程发布的 JSON 请求体示例。
 
-## 1. 创建课程 (Create Course)
+## 1. Create Course
 
 - **URL**: `POST /api/courses`
 - **Content-Type**: `application/json`
@@ -26,17 +26,36 @@
   "course": {
     "id": 1,
     "title": "2025年全栈开发实战",
+    "description": "从零开始学习 Node.js, Vue 3 和 MySQL，构建一个完整的在线教育平台。",
+    "cover_image": "https://example.com/cover.jpg",
+    "type": "PUBLIC",
     "status": "DRAFT",
     "teacher_id": 1,
-    "updated_at": "2025-12-21T...",
-    "created_at": "2025-12-21T..."
+    "updated_at": "2025-12-21T10:00:00.000Z",
+    "created_at": "2025-12-21T10:00:00.000Z"
   }
+}
+```
+
+### 错误响应 (400 Bad Request)
+
+**情况 1: 缺少标题**
+```json
+{
+  "message": "课程标题不能为空"
+}
+```
+
+**情况 2: 缺少教师 ID**
+```json
+{
+  "message": "教师ID不能为空"
 }
 ```
 
 ---
 
-## 2. 更新课程信息 (Update Course)
+## 2. Update Course
 
 - **URL**: `PUT /api/courses/:id`
 - **Content-Type**: `application/json`
@@ -54,34 +73,65 @@
 }
 ```
 
-### 成功响应
+### 成功响应 (200 OK)
 ```json
 {
   "message": "课程更新成功",
-  "course": { ... }
+  "course": {
+    "id": 1,
+    "title": "2025年全栈开发实战 (修订版)",
+    "description": "新增了 Tiptap 编辑器使用教程...",
+    "cover_image": "http://localhost:3000/uploads/images/new-cover.jpg",
+    "type": "PRIVATE",
+    "access_code": "VIP888",
+    "status": "DRAFT",
+    "teacher_id": 1,
+    "created_at": "2025-12-21T10:00:00.000Z",
+    "updated_at": "2025-12-22T10:00:00.000Z"
+  }
+}
+```
+
+### 错误响应 (404 Not Found)
+
+```json
+{
+  "message": "课程不存在"
 }
 ```
 
 ---
 
-## 3. 获取课程详情 (Get Course Detail)
+## 3. Get Course Detail
 
 - **URL**: `GET /api/courses/:id`
 
-### 成功响应
+### 成功响应 (200 OK)
 ```json
 {
   "id": 1,
   "title": "2025年全栈开发实战",
-  "description": "...",
+  "description": "从零开始学习 Node.js, Vue 3 和 MySQL，构建一个完整的在线教育平台。",
+  "cover_image": "https://example.com/cover.jpg",
+  "type": "PUBLIC",
   "status": "DRAFT",
-  ...
+  "teacher_id": 1,
+  "created_at": "2025-12-21T10:00:00.000Z",
+  "updated_at": "2025-12-21T10:00:00.000Z"
+}
+```
+
+### 错误响应 (404 Not Found)
+
+```json
+{
+  "message": "课程不存在"
 }
 ```
 
 ---
 
-## 4. 添加章节 (Add Chapter)
+## 4. Add Chapter
 
 - **URL**: `POST /api/courses/:course_id/chapters`
 - **Content-Type**: `application/json`
@@ -123,9 +173,54 @@
 }
 ```
 
+### 成功响应 (201 Created)
+
+```json
+{
+  "message": "章节添加成功",
+  "chapter": {
+    "id": 3,
+    "title": "1.1 安装 Node.js",
+    "content": "本节课我们将学习...",
+    "video_url": "https://example.com/videos/install-node.mp4",
+    "resource_url": "https://example.com/files/node-v20.pkg",
+    "resource_name": "Node.js 安装包",
+    "order": 1,
+    "course_id": 1,
+    "parent_id": 1,
+    "updated_at": "2025-12-21T10:00:00.000Z",
+    "created_at": "2025-12-21T10:00:00.000Z"
+  }
+}
+```
+
+### 错误响应 (400 Bad Request)
+
+**情况 1: 缺少标题**
+```json
+{
+  "message": "章节标题不能为空"
+}
+```
+
+**情况 2: 父章节已有内容 (无法添加子章节)**
+```json
+{
+  "message": "该父章节包含内容，无法添加子章节。请先清空父章节内容。"
+}
+```
+
+### 错误响应 (404 Not Found)
+
+```json
+{
+  "message": "父章节不存在"
+}
+```
+
 ---
 
-## 5. 更新章节 (Update Chapter)
+## 5. Update Chapter
 
 - **URL**: `PUT /api/courses/:course_id/chapters/:chapter_id`
 - **Content-Type**: `application/json`
@@ -137,42 +232,87 @@
 {
   "title": "1.1 安装 Node.js (Updated)",
   "content": "<p>Updated HTML content...</p>",
-  "video_url": "http://localhost:3000/uploads/videos/new.mp4"
+  "video_url": "http://localhost:3000/uploads/videos/new.mp4",
+  "resource_url": "https://example.com/files/node-v20.pkg",
+  "resource_name": "Node.js 安装包"
 }
 ```
 
-### 成功响应
+### 成功响应 (200 OK)
 ```json
 {
   "message": "章节更新成功",
-  "chapter": { ... }
+  "chapter": {
+    "id": 3,
+    "title": "1.1 安装 Node.js (Updated)",
+    "content": "<p>Updated HTML content...</p>",
+    "video_url": "http://localhost:3000/uploads/videos/new.mp4",
+    "resource_url": "https://example.com/files/node-v20.pkg",
+    "resource_name": "Node.js 安装包",
+    "order": 1,
+    "course_id": 1,
+    "parent_id": 1,
+    "created_at": "2025-12-21T10:00:00.000Z",
+    "updated_at": "2025-12-22T10:00:00.000Z"
+  }
+}
+```
+
+### 错误响应 (400 Bad Request)
+
+```json
+{
+  "message": "该章节包含子章节，仅能作为目录，无法添加内容。"
+}
+```
+
+### 错误响应 (404 Not Found)
+
+```json
+{
+  "message": "章节不存在"
 }
 ```
 
 ---
 
-## 6. 获取章节列表 (Get Chapters)
+## 6. Get Chapters
 
 - **URL**: `GET /api/courses/:course_id/chapters`
 
-### 响应示例 (树形结构)
+### 响应示例 (树形结构) (200 OK)
 ```json
 [
   {
     "id": 2,
     "title": "课程前言",
     "type": "FILE",
+    "content": "欢迎大家来到这门课程...",
+    "video_url": "https://example.com/videos/intro.mp4",
+    "resource_url": null,
+    "resource_name": null,
+    "order": 0,
     "children": []
   },
   {
     "id": 1,
     "title": "第一章：环境搭建",
     "type": "FOLDER",
+    "content": null,
+    "video_url": null,
+    "resource_url": null,
+    "resource_name": null,
+    "order": 1,
     "children": [
       {
         "id": 3,
         "title": "1.1 安装 Node.js",
         "type": "FILE",
+        "content": "本节课我们将学习...",
+        "video_url": "https://example.com/videos/install-node.mp4",
+        "resource_url": "https://example.com/files/node-v20.pkg",
+        "resource_name": "Node.js 安装包",
+        "order": 1,
         "children": []
       }
     ]
@@ -182,14 +322,14 @@
 
 ---
 
-## 7. 发布课程 (Publish Course)
+## 7. Publish Course
 
 - **URL**: `PATCH /api/courses/:id/publish`
 
 ### 请求体
 *(无请求体)*
 
-### 成功响应
+### 成功响应 (200 OK)
 ```json
 {
   "message": "课程发布成功",
@@ -197,14 +337,25 @@
     "id": 1,
     "title": "2025年全栈开发实战",
     "status": "PUBLISHED",
-    ...
+    "teacher_id": 1,
+    "updated_at": "2025-12-23T10:00:00.000Z",
+    "created_at": "2025-12-21T10:00:00.000Z"
   }
 }
 ```
 
-### 失败响应 (如果课程无章节)
+### 错误响应 (400 Bad Request)
+
 ```json
 {
   "message": "无法发布：课程至少需要包含一个章节"
+}
+```
+
+### 错误响应 (404 Not Found)
+
+```json
+{
+  "message": "课程不存在"
 }
 ```
