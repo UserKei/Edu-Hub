@@ -5,6 +5,7 @@
 # Context (输入资料)
 1. **设计稿/布局**：`[./design/xxx/layout.md]`
 2. **API 接口文档**：`[./doc/api/xxx.md]`
+3. **axios 封装**：`[./frontend/src/utils/request.js]`
 3. **已有的通用组件**：请假设我们已经有一套基础 UI 库（Buttons, Inputs 等）。
 4. **技术栈规范**：
    - 框架：Vue 3 + Pinia + JS
