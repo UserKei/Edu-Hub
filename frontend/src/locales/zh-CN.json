@@ -1,0 +1,19 @@
+{
+  "auth": {
+    "login": {
+      "title": "登录 EduHub",
+      "submit": "登录",
+      "no_account": "新用户？创建账号"
+    },
+    "register": {
+      "title": "注册 EduHub",
+      "submit": "注册",
+      "has_account": "已有账号？登录 EduHub"
+    },
+    "field": {
+      "username": "用户名",
+      "password": "密码",
+      "confirm_password": "确认密码"
+    }
+  }
+}

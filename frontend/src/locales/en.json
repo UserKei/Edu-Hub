@@ -1,0 +1,19 @@
+{
+  "auth": {
+    "login": {
+      "title": "Sign in to EduHub",
+      "submit": "Sign In",
+      "no_account": "New to EduHub? Create an account"
+    },
+    "register": {
+      "title": "Register to EduHub",
+      "submit": "Register",
+      "has_account": "Have account already? Login in to EduHub"
+    },
+    "field": {
+      "username": "Username",
+      "password": "Password",
+      "confirm_password": "Password Confirm"
+    }
+  }
+}
