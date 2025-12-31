@@ -15,5 +15,18 @@
       "password": "密码",
       "confirm_password": "确认密码"
     }
+  },
+  "dashboard": {
+    "title": "仪表盘",
+    "my_courses": "我的课程",
+    "continue_learning": "继续学习",
+    "feed": "课程动态",
+    "news": "课程新动态",
+    "no_recent_learning": "暂无最近学习记录"
+  },
+  "nav": {
+    "home": "首页",
+    "course": "课程",
+    "forum": "论坛"
   }
 }

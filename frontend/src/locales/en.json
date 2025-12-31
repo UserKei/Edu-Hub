@@ -15,5 +15,18 @@
       "password": "Password",
       "confirm_password": "Password Confirm"
     }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "my_courses": "My Courses",
+    "continue_learning": "Continue Learning",
+    "feed": "Course Feed",
+    "news": "Course News",
+    "no_recent_learning": "No recent learning history"
+  },
+  "nav": {
+    "home": "Home",
+    "course": "Courses",
+    "forum": "Forum"
   }
 }
