@@ -25,6 +25,10 @@ VALUES ('admin_normal', '123456', '普通管理员', 'ADMIN', 'ACTIVE');
 INSERT INTO InviteCode (code, is_used, expires_at) 
 VALUES ('TEACHER_2025', false, '2025-12-31 23:59:59');
 
+-- 另一个测试码 (来自 test_data.sql)
+INSERT INTO InviteCode (code, is_used, expires_at) 
+VALUES ('HELLO_WORLD', false, '2025-12-31 23:59:59');
+
 -- 已过期的邀请码
 INSERT INTO InviteCode (code, is_used, expires_at) 
 VALUES ('EXPIRED_CODE', false, '2020-01-01 00:00:00');

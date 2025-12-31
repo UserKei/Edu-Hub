@@ -63,8 +63,11 @@ CREATE TABLE IF NOT EXISTS Enrollment (
     grade FLOAT COMMENT '考试成绩',
     progress INT DEFAULT 0,
     joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_chapter_id INT COMMENT '最后访问的章节ID',
+    last_accessed_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '最后访问时间',
     FOREIGN KEY (student_id) REFERENCES User(id),
-    FOREIGN KEY (course_id) REFERENCES Course(id)
+    FOREIGN KEY (course_id) REFERENCES Course(id),
+    FOREIGN KEY (last_chapter_id) REFERENCES Chapter(id) ON DELETE SET NULL
 ) COMMENT='选课记录 (User <-> Course 多对多)';
 
 -- Post Table

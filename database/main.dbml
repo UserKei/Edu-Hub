@@ -125,6 +125,10 @@ Table Enrollment {
   progress int [default: 0]
   joined_at datetime [default: `now()`]
   
+  // --- Continue Learning ---
+  last_chapter_id int [null, note: "最后访问的章节ID"]
+  last_accessed_at datetime [default: `now()`, note: "最后访问时间"]
+
   Note: "选课记录 (User <-> Course 多对多)"
 }
 
@@ -170,6 +174,7 @@ Ref: Chapter.id - Chapter.parent_id
 // 选课 (多对多)
 Ref: User.id < Enrollment.student_id
 Ref: Course.id < Enrollment.course_id
+Ref: Chapter.id < Enrollment.last_chapter_id [delete: set null]
 
 // 帖子关系
 Ref: User.id < Post.author_id
