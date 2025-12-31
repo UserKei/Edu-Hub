@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const User = require('./User');
 const Course = require('./Course');
+const Chapter = require('./Chapter');
 
 const Enrollment = sequelize.define('Enrollment', {
   id: {
@@ -37,15 +38,30 @@ const Enrollment = sequelize.define('Enrollment', {
   joined_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
+  },
+  last_chapter_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: Chapter,
+      key: 'id'
+    },
+    comment: '最后访问的章节ID'
+  },
+  last_accessed_at: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    comment: '最后访问时间'
   }
 }, {
   tableName: 'Enrollment',
-  timestamps: false // Enrollment table in dbml doesn't have updated_at, only joined_at which is handled above
+  timestamps: false
 });
 
 // Define associations
 Enrollment.belongsTo(User, { foreignKey: 'student_id', as: 'student' });
 Enrollment.belongsTo(Course, { foreignKey: 'course_id', as: 'course' });
+Enrollment.belongsTo(Chapter, { foreignKey: 'last_chapter_id', as: 'last_chapter' });
 
 // Also define the reverse associations if needed, but usually defining here is enough for Enrollment queries.
 // However, to make sure Sequelize knows about the relationship from the other side if we ever use it:
