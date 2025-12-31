@@ -1,4 +1,5 @@
 const Chapter = require('../models/Chapter');
+const Enrollment = require('../models/Enrollment');
 
 // 递归构建树形结构
 const buildChapterTree = (chapters, parentId = null) => {
@@ -126,6 +127,45 @@ exports.getChapters = async (req, res) => {
     res.json(tree);
   } catch (error) {
     console.error('Get chapters error:', error);
+    res.status(500).json({ message: '服务器内部错误' });
+  }
+};
+
+exports.updateProgress = async (req, res) => {
+  try {
+    const { courseId, chapterId } = req.params;
+    const userId = req.user.id;
+
+    // 查找选课记录
+    const enrollment = await Enrollment.findOne({
+      where: {
+        student_id: userId,
+        course_id: courseId
+      }
+    });
+
+    if (!enrollment) {
+      return res.status(404).json({ message: '未找到选课记录' });
+    }
+
+    // 更新最后访问的章节和时间
+    enrollment.last_chapter_id = chapterId;
+    enrollment.last_accessed_at = new Date();
+    
+    // TODO: 这里可以添加逻辑来计算并更新 progress (例如百分比)
+    // 目前仅更新最后访问位置
+
+    await enrollment.save();
+
+    res.status(200).json({
+      message: '学习进度更新成功',
+      data: {
+        last_chapter_id: enrollment.last_chapter_id,
+        last_accessed_at: enrollment.last_accessed_at
+      }
+    });
+  } catch (error) {
+    console.error('Update progress error:', error);
     res.status(500).json({ message: '服务器内部错误' });
   }
 };

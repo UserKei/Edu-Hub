@@ -23,4 +23,7 @@ router.post('/:course_id/chapters', chapterController.addChapter);
 router.get('/:course_id/chapters', chapterController.getChapters);
 router.put('/:course_id/chapters/:chapter_id', chapterController.updateChapter);
 
+// 学习进度 (需认证)
+router.post('/:courseId/chapters/:chapterId/progress', verifyToken, chapterController.updateProgress);
+
 module.exports = router;
