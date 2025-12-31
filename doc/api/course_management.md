@@ -536,3 +536,44 @@
   "message": "请先加入课程后再进行学习"
 }
 ```
+
+---
+
+## 7. Update Learning Progress
+
+- **URL**: `POST /api/courses/:courseId/chapters/:chapterId/progress`
+- **Content-Type**: `application/json`
+- **Auth**: Required (Bearer Token)
+
+### 请求体示例
+
+*(无请求体，参数在 URL 中)*
+
+### 成功响应 (200 OK)
+
+```json
+{
+  "message": "学习进度更新成功",
+  "data": {
+    "last_chapter_id": "5",
+    "last_accessed_at": "2025-12-22T10:30:00.000Z"
+  }
+}
+```
+
+### 错误响应 (404 Not Found)
+
+**情况 1: 未找到选课记录**
+```json
+{
+  "message": "未找到选课记录"
+}
+```
+
+### 错误响应 (500 Internal Server Error)
+
+```json
+{
+  "message": "服务器内部错误"
+}
+```
