@@ -31,6 +31,15 @@
         </div>
       </div>
     </main>
+
+    <InputModal
+      v-model="newChapterTitle"
+      :is-open="showAddModal"
+      title="Add New Chapter"
+      placeholder="Enter chapter title..."
+      @close="showAddModal = false"
+      @confirm="confirmAddChapter"
+    />
   </div>
 </template>
 
@@ -41,6 +50,7 @@ import { useToast } from '@/composables/useToast'
 import ChapterTree from './ChapterTree.vue'
 import ChapterContentEditor from './ChapterContentEditor.vue'
 import EditorToolbar from './EditorToolbar.vue'
+import InputModal from '@/components/ui/InputModal.vue'
 
 const store = useCourseCreationStore()
 const toast = useToast()
@@ -63,21 +73,37 @@ const currentChapter = computed(() => {
 })
 
 const lastSavedTime = ref('')
+const showAddModal = ref(false)
+const newChapterTitle = ref('')
+const pendingParentId = ref(null)
 
 const handleSelect = (id) => {
   store.currentChapterId = id
 }
 
-const handleAdd = async (parentId) => {
-  const title = prompt('Enter chapter title:')
-  if (!title) return
+const handleAdd = (parentId) => {
+  pendingParentId.value = parentId
+  newChapterTitle.value = ''
+  showAddModal.value = true
+}
 
-  // Calculate order (append to end)
-  await store.addChapter({
-    title,
-    parent_id: parentId,
-    order: 9999 // Append to end
-  })
+const confirmAddChapter = async () => {
+  if (!newChapterTitle.value.trim()) {
+    toast.warning('Please enter a chapter title')
+    return
+  }
+
+  try {
+    await store.addChapter({
+      title: newChapterTitle.value,
+      parent_id: pendingParentId.value,
+      order: 9999
+    })
+    showAddModal.value = false
+  } catch (error) {
+    console.error(error)
+    toast.error('Failed to add chapter')
+  }
 }
 
 const handleDelete = async (id) => {
