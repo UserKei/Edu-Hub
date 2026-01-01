@@ -18,11 +18,15 @@ const router = useRouter()
 const handleClick = () => {
   if (props.isEnrolled) {
     // 如果已选修，跳转到内容/学习页面
-    // 假设 API 返回 last_chapter_id 或者我们跳转到课程根目录
-    router.push(`/course/${props.course.course_id || props.course.id}/learn`)
+    router.push(`/learn/${props.course.course_id || props.course.id}`)
   } else {
     // 如果未选修，跳转到课程详情/介绍页面
-    router.push(`/course/${props.course.id}`)
+    // TODO: Implement Course Detail/Intro page. For now, redirect to learn page if public or handle differently
+    // Assuming we have a detail page at /course/:id, but currently we only have /learn/:id
+    // Let's point to /learn/:id for now, assuming the view handles enrollment check or we add a detail view later.
+    // Actually, the user complained about /course/2 not matching.
+    // If we don't have a detail page yet, we should probably just go to /learn/ and let the backend/frontend handle access control.
+    router.push(`/learn/${props.course.id}`)
   }
 }
 </script>

@@ -33,6 +33,6 @@ const props = defineProps({
 const router = useRouter()
 
 const handleContinue = () => {
-  router.push(`/course/${props.course.course_id}/chapter/${props.course.last_chapter_id}`)
+  router.push(`/learn/${props.course.course_id}`)
 }
 </script>
