@@ -187,8 +187,14 @@ exports.getCourseContent = async (req, res) => {
     const { id } = req.params; // course_id
     const userId = req.user.id;
 
+    // Fetch course details first
+    const course = await Course.findByPk(id);
+    if (!course) {
+      return res.status(404).json({ message: '课程不存在' });
+    }
+
     // Check enrollment
-    const enrollment = await Enrollment.findOne({
+    let enrollment = await Enrollment.findOne({
       where: {
         student_id: userId,
         course_id: id
@@ -196,7 +202,18 @@ exports.getCourseContent = async (req, res) => {
     });
 
     if (!enrollment) {
-      return res.status(403).json({ message: '请先加入课程后再进行学习' });
+      // Check if course is public and auto-enroll
+      if (course.type === 'PUBLIC') {
+        enrollment = await Enrollment.create({
+          student_id: userId,
+          course_id: id,
+          enrolled_at: new Date(),
+          progress: 0,
+          status: 'IN_PROGRESS'
+        });
+      } else {
+        return res.status(403).json({ message: '请先加入课程后再进行学习' });
+      }
     }
 
     // Fetch chapters
@@ -224,7 +241,7 @@ exports.getCourseContent = async (req, res) => {
     };
 
     const tree = buildTree(chapters);
-    res.json({ enrollment, chapters: tree });
+    res.json({ course, enrollment, chapters: tree });
 
   } catch (error) {
     console.error('Get course content error:', error);
