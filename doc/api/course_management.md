@@ -276,7 +276,41 @@
 
 ---
 
-## 6. Get Chapters
+## 6. Delete Chapter
+
+- **URL**: `DELETE /api/courses/:course_id/chapters/:chapter_id`
+- **Content-Type**: `application/json`
+
+### 请求体
+*(无请求体)*
+
+### 成功响应 (200 OK)
+
+```json
+{
+  "message": "章节删除成功"
+}
+```
+
+### 错误响应 (404 Not Found)
+
+```json
+{
+  "message": "章节不存在"
+}
+```
+
+### 错误响应 (500 Internal Server Error)
+
+```json
+{
+  "message": "服务器内部错误"
+}
+```
+
+---
+
+## 7. Get Chapters
 
 - **URL**: `GET /api/courses/:course_id/chapters`
 
@@ -322,7 +356,7 @@
 
 ---
 
-## 7. Publish Course
+## 8. Publish Course
 
 - **URL**: `PATCH /api/courses/:id/publish`
 
@@ -362,7 +396,7 @@
 
 ---
 
-## 8. Get Course List
+## 9. Get Course List
 
 - **URL**: `GET /api/courses`
 - **Query Params**: None (currently)
@@ -386,7 +420,7 @@
 
 ---
 
-## 9. Get Enrolled Courses (Student)
+## 10. Get Enrolled Courses (Student)
 
 - **URL**: `GET /api/courses/enrolled`
 - **Headers**: `Authorization: Bearer <token>`
@@ -418,7 +452,7 @@
 
 ---
 
-## 10. Enroll Course (Student)
+## 11. Enroll Course (Student)
 
 - **URL**: `POST /api/courses/:id/enroll`
 - **Headers**: `Authorization: Bearer <token>`
@@ -486,7 +520,7 @@
 
 ---
 
-## 11. Get Course Content (Student)
+## 12. Get Course Content (Student)
 
 - **URL**: `GET /api/courses/:id/content`
 - **Headers**: `Authorization: Bearer <token>`
@@ -539,7 +573,7 @@
 
 ---
 
-## 7. Update Learning Progress
+## 13. Update Learning Progress
 
 - **URL**: `POST /api/courses/:courseId/chapters/:chapterId/progress`
 - **Content-Type**: `application/json`
