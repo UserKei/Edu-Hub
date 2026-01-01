@@ -1,4 +1,5 @@
 import './assets/main.css'
+import 'vue-sonner/lib/index.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
