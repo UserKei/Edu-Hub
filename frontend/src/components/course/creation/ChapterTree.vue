@@ -29,7 +29,7 @@
 <script setup>
 import NestedDraggable from './NestedDraggable.vue'
 
-const props = defineProps({
+defineProps({
   chapters: {
     type: Array,
     required: true
@@ -39,7 +39,7 @@ const props = defineProps({
 
 const emit = defineEmits(['select', 'add', 'delete', 'move'])
 
-const handleTreeChange = (evt) => {
+const handleTreeChange = () => {
   emit('move')
 }
 </script>
