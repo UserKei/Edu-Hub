@@ -38,6 +38,18 @@ const router = createRouter({
       name: 'student-course-detail',
       component: () => import('../views/student/StudentCourseDetailView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/course/new',
+      name: 'course-create',
+      component: () => import('../views/course/NewCourseView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/course/:id/edit',
+      name: 'course-edit',
+      component: () => import('../views/course/NewCourseView.vue'),
+      meta: { requiresAuth: true }
     }
   ],
 })
