@@ -169,3 +169,30 @@ exports.updateProgress = async (req, res) => {
     res.status(500).json({ message: '服务器内部错误' });
   }
 };
+
+exports.deleteChapter = async (req, res) => {
+  try {
+    const { chapter_id } = req.params;
+    const chapter = await Chapter.findByPk(chapter_id);
+    
+    if (!chapter) {
+      return res.status(404).json({ message: '章节不存在' });
+    }
+
+    // 递归删除子章节
+    const deleteRecursively = async (id) => {
+      const children = await Chapter.findAll({ where: { parent_id: id } });
+      for (const child of children) {
+        await deleteRecursively(child.id);
+      }
+      await Chapter.destroy({ where: { id } });
+    };
+
+    await deleteRecursively(chapter_id);
+
+    res.json({ message: '章节删除成功' });
+  } catch (error) {
+    console.error('Delete chapter error:', error);
+    res.status(500).json({ message: '服务器内部错误' });
+  }
+};
