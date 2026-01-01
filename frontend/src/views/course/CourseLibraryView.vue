@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCourseStore } from '@/stores/course'
 import { useAuthStore } from '@/stores/auth'
 import CourseActionToolbar from '@/components/course/CourseActionToolbar.vue'
@@ -7,6 +8,7 @@ import CourseList from '@/components/course/CourseList.vue'
 import CourseCard from '@/components/course/CourseCard.vue'
 import CourseLayout from './CourseLayout.vue'
 
+const router = useRouter()
 const courseStore = useCourseStore()
 const authStore = useAuthStore()
 
@@ -27,8 +29,7 @@ const handleSearch = (query) => {
 }
 
 const handleCreate = () => {
-  // TODO: 打开创建课程模态框或跳转到创建页面
-  console.log('Create course clicked')
+  router.push('/course/new')
 }
 
 onMounted(async () => {
