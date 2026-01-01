@@ -28,5 +28,24 @@
     "home": "Home",
     "course": "Courses",
     "forum": "Forum"
+  },
+  "course": {
+    "library": {
+      "title": "Course Library"
+    },
+    "my_courses": {
+      "title": "My Courses"
+    },
+    "action": {
+      "search_placeholder": "Search courses...",
+      "create": "New Course"
+    },
+    "list": {
+      "empty": "No courses found"
+    },
+    "type": {
+      "public": "Public",
+      "private": "Private"
+    }
   }
 }

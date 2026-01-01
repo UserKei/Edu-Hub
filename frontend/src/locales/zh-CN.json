@@ -28,5 +28,24 @@
     "home": "首页",
     "course": "课程",
     "forum": "论坛"
+  },
+  "course": {
+    "library": {
+      "title": "课程库"
+    },
+    "my_courses": {
+      "title": "我的课程"
+    },
+    "action": {
+      "search_placeholder": "搜索课程...",
+      "create": "新建课程"
+    },
+    "list": {
+      "empty": "暂无课程"
+    },
+    "type": {
+      "public": "公开",
+      "private": "私有"
+    }
   }
 }
