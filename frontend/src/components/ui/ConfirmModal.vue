@@ -18,20 +18,10 @@
           @click.stop
         >
           <div class="p-6">
-            <h3 class="text-lg font-bold text-ctp-text mb-4">{{ title }}</h3>
+            <h3 class="text-lg font-bold text-ctp-text mb-2">{{ title }}</h3>
+            <p class="text-ctp-subtext0 mb-6">{{ message }}</p>
 
-            <input
-              ref="inputRef"
-              :value="modelValue"
-              @input="$emit('update:modelValue', $event.target.value)"
-              @keyup.enter="handleConfirm"
-              @keyup.esc="$emit('close')"
-              type="text"
-              class="w-full rounded-lg bg-ctp-surface0 border border-ctp-surface1 p-3 text-ctp-text focus:border-ctp-blue focus:outline-none placeholder-ctp-overlay1"
-              :placeholder="placeholder"
-            />
-
-            <div class="mt-6 flex justify-end gap-3">
+            <div class="flex justify-end gap-3">
               <button
                 @click="$emit('close')"
                 class="px-4 py-2 rounded-lg text-ctp-subtext0 hover:bg-ctp-surface0 transition-colors"
@@ -40,7 +30,7 @@
               </button>
               <button
                 @click="handleConfirm"
-                class="px-4 py-2 rounded-lg bg-ctp-blue text-ctp-base font-medium hover:bg-ctp-blue/90 transition-colors"
+                class="px-4 py-2 rounded-lg bg-ctp-red text-ctp-base font-medium hover:bg-ctp-red/90 transition-colors"
               >
                 Confirm
               </button>
@@ -53,33 +43,19 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
-
-const props = defineProps({
+defineProps({
   isOpen: Boolean,
   title: {
     type: String,
-    default: 'Input'
+    default: 'Confirm Action'
   },
-  placeholder: {
+  message: {
     type: String,
-    default: ''
-  },
-  modelValue: {
-    type: String,
-    default: ''
+    default: 'Are you sure you want to proceed?'
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'close', 'confirm'])
-const inputRef = ref(null)
-
-watch(() => props.isOpen, async (val) => {
-  if (val) {
-    await nextTick()
-    inputRef.value?.focus()
-  }
-})
+const emit = defineEmits(['close', 'confirm'])
 
 const handleConfirm = () => {
   emit('confirm')
