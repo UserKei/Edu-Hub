@@ -91,12 +91,14 @@ import { ref, watch, onBeforeUnmount } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import request from '@/utils/request'
+import { useToast } from '@/composables/useToast'
 
 const props = defineProps({
   chapter: Object
 })
 
 const emit = defineEmits(['update'])
+const toast = useToast()
 
 const localChapter = ref({})
 const isUploading = ref(false)
@@ -158,11 +160,11 @@ const handleDrop = (event) => {
 const handleFileUpload = async (file) => {
   // Validation
   if (!file.type.startsWith('video/')) {
-    alert('Please upload a video file.')
+    toast.error('Please upload a video file.')
     return
   }
   if (file.size > 500 * 1024 * 1024) {
-    alert('File size exceeds 500MB limit.')
+    toast.error('File size exceeds 500MB limit.')
     return
   }
 
@@ -181,7 +183,7 @@ const handleFileUpload = async (file) => {
     emitUpdate()
   } catch (error) {
     console.error('Upload failed:', error)
-    alert('Failed to upload video.')
+    toast.error('Failed to upload video.')
   } finally {
     isUploading.value = false
     // Reset input

@@ -37,11 +37,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useCourseCreationStore } from '@/stores/course-creation'
+import { useToast } from '@/composables/useToast'
 import ChapterTree from './ChapterTree.vue'
 import ChapterContentEditor from './ChapterContentEditor.vue'
 import EditorToolbar from './EditorToolbar.vue'
 
 const store = useCourseCreationStore()
+const toast = useToast()
 
 const chapters = computed(() => store.chapters)
 const currentChapterId = computed(() => store.currentChapterId)
@@ -124,13 +126,13 @@ const handleSave = () => {
 }
 
 const handlePreview = () => {
-  alert('Preview not implemented yet')
+  toast.info('Preview not implemented yet')
 }
 
 const handlePublish = async () => {
   if (confirm('Publish this course?')) {
     await store.publishCourse()
-    alert('Course published!')
+    toast.success('Course published!')
   }
 }
 

@@ -21,6 +21,7 @@ import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCourseCreationStore } from '@/stores/course-creation'
 import { useAuthStore } from '@/stores/auth'
+import { useToast } from '@/composables/useToast'
 import CourseBaseInfo from '@/components/course/creation/CourseBaseInfo.vue'
 import CourseChapterEditor from '@/components/course/creation/CourseChapterEditor.vue'
 
@@ -28,6 +29,7 @@ const route = useRoute()
 const router = useRouter()
 const store = useCourseCreationStore()
 const authStore = useAuthStore()
+const toast = useToast()
 
 onMounted(async () => {
   const id = route.params.id
@@ -59,7 +61,7 @@ const handleStep1Submit = async (data) => {
     store.currentStep = 2
   } catch (error) {
     console.error(error)
-    alert('Failed to save course info')
+    toast.error('Failed to save course info')
   }
 }
 </script>

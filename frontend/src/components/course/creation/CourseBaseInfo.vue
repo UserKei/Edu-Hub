@@ -68,6 +68,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useToast } from '@/composables/useToast'
 
 const props = defineProps({
   initialData: {
@@ -77,6 +78,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['submit'])
+const toast = useToast()
 
 const formData = ref({
   title: '',
@@ -106,7 +108,7 @@ const handleMockUpload = () => {
 
 const submit = () => {
   if (!formData.value.title) {
-    alert('Please enter a course title')
+    toast.warning('Please enter a course title')
     return
   }
   emit('submit', formData.value)
