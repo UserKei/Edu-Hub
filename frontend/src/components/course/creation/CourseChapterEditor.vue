@@ -40,6 +40,14 @@
       @close="showAddModal = false"
       @confirm="confirmAddChapter"
     />
+
+    <ConfirmModal
+      :is-open="showConfirmModal"
+      :title="confirmConfig.title"
+      :message="confirmConfig.message"
+      @close="showConfirmModal = false"
+      @confirm="handleConfirmAction"
+    />
   </div>
 </template>
 
@@ -51,6 +59,7 @@ import ChapterTree from './ChapterTree.vue'
 import ChapterContentEditor from './ChapterContentEditor.vue'
 import EditorToolbar from './EditorToolbar.vue'
 import InputModal from '@/components/ui/InputModal.vue'
+import ConfirmModal from '@/components/ui/ConfirmModal.vue'
 
 const store = useCourseCreationStore()
 const toast = useToast()
@@ -76,6 +85,13 @@ const lastSavedTime = ref('')
 const showAddModal = ref(false)
 const newChapterTitle = ref('')
 const pendingParentId = ref(null)
+
+const showConfirmModal = ref(false)
+const confirmConfig = ref({
+  title: '',
+  message: '',
+  action: null
+})
 
 const handleSelect = (id) => {
   store.currentChapterId = id
@@ -106,13 +122,31 @@ const confirmAddChapter = async () => {
   }
 }
 
-const handleDelete = async (id) => {
-  if (confirm('Are you sure you want to delete this chapter?')) {
-    await store.deleteChapter(id)
-    if (store.currentChapterId === id) {
-      store.currentChapterId = null
+const handleDelete = (id) => {
+  confirmConfig.value = {
+    title: 'Delete Chapter',
+    message: 'Are you sure you want to delete this chapter? This action cannot be undone.',
+    action: async () => {
+      await store.deleteChapter(id)
+      if (store.currentChapterId === id) {
+        store.currentChapterId = null
+      }
+      toast.success('Chapter deleted')
     }
   }
+  showConfirmModal.value = true
+}
+
+const handleConfirmAction = async () => {
+  if (confirmConfig.value.action) {
+    try {
+      await confirmConfig.value.action()
+    } catch (error) {
+      console.error(error)
+      toast.error('Action failed')
+    }
+  }
+  showConfirmModal.value = false
 }
 
 const handleMove = async () => {
@@ -155,11 +189,16 @@ const handlePreview = () => {
   toast.info('Preview not implemented yet')
 }
 
-const handlePublish = async () => {
-  if (confirm('Publish this course?')) {
-    await store.publishCourse()
-    toast.success('Course published!')
+const handlePublish = () => {
+  confirmConfig.value = {
+    title: 'Publish Course',
+    message: 'Are you sure you want to publish this course? It will be visible to students.',
+    action: async () => {
+      await store.publishCourse()
+      toast.success('Course published!')
+    }
   }
+  showConfirmModal.value = true
 }
 
 onMounted(() => {
