@@ -5,10 +5,12 @@ import { Toaster } from 'vue-sonner'
 
 <template>
   <Toaster
-    position="top-center"
+    position="top-left"
     :toastOptions="{
-      class: 'bg-ctp-base border border-ctp-surface1 shadow-lg rounded-xl text-ctp-text',
-      descriptionClass: 'text-ctp-subtext0 text-xs'
+      class: 'bg-ctp-base border border-ctp-surface1 shadow-xl rounded-xl text-ctp-text min-w-[320px]',
+      descriptionClass: 'text-ctp-subtext0 text-xs',
+      actionButtonClass: 'bg-ctp-blue text-ctp-base',
+      cancelButtonClass: 'bg-ctp-surface0 text-ctp-text'
     }"
   />
   <RouterView />
