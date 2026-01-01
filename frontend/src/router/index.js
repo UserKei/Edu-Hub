@@ -5,7 +5,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'dashboard',
+      name: 'home',
       component: () => import('../views/dashboard/DashboardView.vue')
     },
     {
@@ -32,6 +32,12 @@ const router = createRouter({
       path: '/my-courses',
       name: 'my-courses',
       component: () => import('../views/course/MyCoursesView.vue')
+    },
+    {
+      path: '/learn/:courseId',
+      name: 'student-course-detail',
+      component: () => import('../views/student/StudentCourseDetailView.vue'),
+      meta: { requiresAuth: true }
     }
   ],
 })

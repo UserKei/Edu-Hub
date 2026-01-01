@@ -47,5 +47,24 @@
       "public": "Public",
       "private": "Private"
     }
+  },
+  "student": {
+    "course": {
+      "sidebar": {
+        "title": "Course Outline",
+        "completed": "Completed"
+      },
+      "content": {
+        "resources": "Resources",
+        "prev": "Previous",
+        "next": "Next",
+        "select_chapter": "Select a chapter to start learning"
+      },
+      "discussion": {
+        "title": "Discussion",
+        "placeholder": "Type your comment...",
+        "no_comments": "No comments yet"
+      }
+    }
   }
 }
