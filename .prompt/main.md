@@ -3,7 +3,7 @@
 这份计划后续将作为 Prompt 发送给开发者（AI）进行代码实现。
 
 # Context (输入资料)
-1. **设计稿/布局**：`[./design/xxx/layout.md]`
+1. **设计稿/布局**：`[./.design/xxx/layout.md]`
 2. **API 接口文档**：`[./doc/api/xxx.md]`
 3. **axios 封装**：`[./frontend/src/utils/request.js]`
 3. **已有的通用组件**：请假设我们已经有一套基础 UI 库（Buttons, Inputs 等）。
@@ -13,7 +13,7 @@
    - 国际化：vue-i18n (@11)
 
 # Task
-请详细分析上述资料，编写一份名为 `[./process/xxx/prompt.md]` 的开发计划文档。
+请详细分析上述资料，编写一份名为 `[./.process/xxx/prompt.md]` 的开发计划文档。
 该文档的内容必须包含以下 4 个核心部分：
 
 ## 1. 组件架构分析 (Component Architecture)
@@ -38,8 +38,8 @@
 
 ## 4. 样式与配色 (Styling)
 - 提醒使用 `@catppuccin/tailwindcss` 的配色方案。
-- 提醒参考 `./colors/prompt.md`。
+- 提醒参考 `./.colors/prompt.md`。
 
 # Output Format
-请直接输出 `[./process/xxx/prompt.md]` 的文件内容（Markdown 格式）。
+请直接输出 `[..process/xxx/prompt.md]` 的文件内容（Markdown 格式）。
 内容应以 "User Story" 或 "Implementation Steps" 的形式呈现，清晰指导后续的编码工作。
