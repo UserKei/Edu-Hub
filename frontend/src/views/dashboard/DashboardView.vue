@@ -8,7 +8,7 @@
 
       <!-- Main Content Area -->
       <div class="col-span-1 xl:col-span-2 flex flex-col gap-6 h-full overflow-hidden">
-        <ContinueLearningList class="shrink-0" />
+        <ContinueLearningList class="shrink-0 max-h-125 overflow-y-auto" />
         <CourseFeed class="flex-1 min-h-0 overflow-hidden" />
       </div>
 
