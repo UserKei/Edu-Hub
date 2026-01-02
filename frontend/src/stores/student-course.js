@@ -83,6 +83,8 @@ export const useStudentCourseStore = defineStore('student-course', () => {
   const fetchCourseContent = async (courseId) => {
     isLoading.value = true
     error.value = null
+    currentChapter.value = null // Reset current chapter to avoid stale state
+
     try {
       const res = await request.get(`/api/courses/${courseId}/content`)
       course.value = res.course
