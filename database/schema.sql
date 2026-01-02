@@ -70,6 +70,21 @@ CREATE TABLE IF NOT EXISTS Enrollment (
     FOREIGN KEY (last_chapter_id) REFERENCES Chapter(id) ON DELETE SET NULL
 ) COMMENT='选课记录 (User <-> Course 多对多)';
 
+-- ChapterProgress Table
+CREATE TABLE IF NOT EXISTS ChapterProgress (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    chapter_id INT NOT NULL,
+    course_id INT NOT NULL,
+    is_completed BOOLEAN DEFAULT FALSE,
+    progress INT DEFAULT 0,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE,
+    FOREIGN KEY (chapter_id) REFERENCES Chapter(id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES Course(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_chapter (user_id, chapter_id)
+) COMMENT='用户章节学习进度表';
+
 -- Post Table
 CREATE TABLE IF NOT EXISTS Post (
     id INT AUTO_INCREMENT PRIMARY KEY,

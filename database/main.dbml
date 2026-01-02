@@ -132,6 +132,18 @@ Table Enrollment {
   Note: "选课记录 (User <-> Course 多对多)"
 }
 
+Table ChapterProgress {
+  id int [pk, increment]
+  user_id int [not null]
+  chapter_id int [not null]
+  course_id int [not null]
+  is_completed boolean [default: false]
+  progress int [default: 0]
+  updated_at datetime [default: `now()`]
+
+  Note: "用户章节学习进度表"
+}
+
 Table Post {
   id int [pk, increment]
   title varchar [not null]
@@ -175,6 +187,11 @@ Ref: Chapter.id - Chapter.parent_id
 Ref: User.id < Enrollment.student_id
 Ref: Course.id < Enrollment.course_id
 Ref: Chapter.id < Enrollment.last_chapter_id [delete: set null]
+
+// 章节进度
+Ref: User.id < ChapterProgress.user_id [delete: cascade]
+Ref: Chapter.id < ChapterProgress.chapter_id [delete: cascade]
+Ref: Course.id < ChapterProgress.course_id [delete: cascade]
 
 // 帖子关系
 Ref: User.id < Post.author_id
