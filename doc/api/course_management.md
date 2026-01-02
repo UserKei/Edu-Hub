@@ -546,6 +546,8 @@
       "resource_url": null,
       "resource_name": null,
       "order": 1,
+      "is_completed": false,
+      "progress": 0,
       "children": [
         {
           "id": 3,
@@ -556,6 +558,8 @@
           "resource_url": "...",
           "resource_name": "...",
           "order": 1,
+          "is_completed": true,
+          "progress": 100,
           "children": []
         }
       ]
@@ -577,11 +581,16 @@
 
 - **URL**: `POST /api/courses/:courseId/chapters/:chapterId/progress`
 - **Content-Type**: `application/json`
-- **Auth**: Required (Bearer Token)
+- **Headers**: `Authorization: Bearer <token>`
 
 ### 请求体示例
 
-*(无请求体，参数在 URL 中)*
+```json
+{
+  "progress": 50,
+  "status": "IN_PROGRESS"
+}
+```
 
 ### 成功响应 (200 OK)
 
@@ -589,8 +598,18 @@
 {
   "message": "学习进度更新成功",
   "data": {
-    "last_chapter_id": "5",
-    "last_accessed_at": "2025-12-22T10:30:00.000Z"
+    "last_chapter_id": 5,
+    "last_accessed_at": "2025-12-22T10:30:00.000Z",
+    "chapter_progress": {
+      "id": 10,
+      "user_id": 2,
+      "chapter_id": 5,
+      "course_id": 1,
+      "is_completed": false,
+      "progress": 50,
+      "updated_at": "2025-12-22T10:30:00.000Z"
+    },
+    "course_progress": 25
   }
 }
 ```
