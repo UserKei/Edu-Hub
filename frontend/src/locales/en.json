@@ -22,7 +22,8 @@
     "continue_learning": "Continue Learning",
     "feed": "Course Feed",
     "news": "Course News",
-    "no_recent_learning": "No recent learning history"
+    "no_recent_learning": "No recent learning history",
+    "start_learning": "Start Learning"
   },
   "nav": {
     "home": "Home",
