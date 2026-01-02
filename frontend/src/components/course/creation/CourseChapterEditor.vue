@@ -53,6 +53,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCourseCreationStore } from '@/stores/course-creation'
 import { useToast } from '@/composables/useToast'
 import ChapterTree from './ChapterTree.vue'
@@ -61,6 +62,7 @@ import EditorToolbar from './EditorToolbar.vue'
 import InputModal from '@/components/ui/InputModal.vue'
 import ConfirmModal from '@/components/ui/ConfirmModal.vue'
 
+const router = useRouter()
 const store = useCourseCreationStore()
 const toast = useToast()
 
@@ -196,6 +198,7 @@ const handlePublish = () => {
     action: async () => {
       await store.publishCourse()
       toast.success('Course published!')
+      router.push({ name: 'student-course-detail', params: { courseId: store.courseId } })
     }
   }
   showConfirmModal.value = true
