@@ -1,6 +1,7 @@
 const Course = require('../models/Course');
 const Chapter = require('../models/Chapter');
 const Enrollment = require('../models/Enrollment');
+const ChapterProgress = require('../models/ChapterProgress');
 
 exports.createCourse = async (req, res) => {
   try {
@@ -233,6 +234,31 @@ exports.getCourseContent = async (req, res) => {
       raw: true
     });
 
+    // Fetch progress for all chapters in this course for this user
+    const progressList = await ChapterProgress.findAll({
+      where: { 
+        course_id: id,
+        user_id: userId
+      },
+      raw: true
+    });
+
+    // Create a map for quick lookup
+    const progressMap = {};
+    progressList.forEach(p => {
+      progressMap[p.chapter_id] = p;
+    });
+
+    // Merge progress into chapters
+    const chaptersWithProgress = chapters.map(chapter => {
+      const p = progressMap[chapter.id];
+      return {
+        ...chapter,
+        is_completed: p ? !!p.is_completed : false,
+        progress: p ? p.progress : 0
+      };
+    });
+
     // Build tree
     const buildTree = (items, parentId = null) => {
       return items
@@ -250,7 +276,7 @@ exports.getCourseContent = async (req, res) => {
         });
     };
 
-    const tree = buildTree(chapters);
+    const tree = buildTree(chaptersWithProgress);
     res.json({ course, enrollment, chapters: tree });
 
   } catch (error) {

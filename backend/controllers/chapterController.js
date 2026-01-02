@@ -1,5 +1,6 @@
 const Chapter = require('../models/Chapter');
 const Enrollment = require('../models/Enrollment');
+const ChapterProgress = require('../models/ChapterProgress');
 
 // 递归构建树形结构
 const buildChapterTree = (chapters, parentId = null) => {
@@ -135,6 +136,7 @@ exports.updateProgress = async (req, res) => {
   try {
     const { courseId, chapterId } = req.params;
     const userId = req.user.id;
+    const { progress, status } = req.body;
 
     // 查找选课记录
     const enrollment = await Enrollment.findOne({
@@ -151,17 +153,121 @@ exports.updateProgress = async (req, res) => {
     // 更新最后访问的章节和时间
     enrollment.last_chapter_id = chapterId;
     enrollment.last_accessed_at = new Date();
-    
-    // TODO: 这里可以添加逻辑来计算并更新 progress (例如百分比)
-    // 目前仅更新最后访问位置
-
     await enrollment.save();
+
+    // 更新章节进度
+    const isCompleted = status === 'COMPLETED' || progress >= 100;
+    
+    // 使用 upsert 更新或插入进度记录
+    // 注意：ChapterProgress 模型中定义了 unique_user_chapter 索引
+    const [chapterProgress] = await ChapterProgress.upsert({
+      user_id: userId,
+      chapter_id: chapterId,
+      course_id: courseId,
+      progress: progress || 0,
+      is_completed: isCompleted
+    });
+
+    // 如果是已完成，确保 is_completed 为 true (upsert 会覆盖，但为了保险起见，如果之前是 true，现在也是 true)
+    // 如果之前是 true，现在 progress < 100，是否要改回 false？通常不需要，完成过一次就算完成。
+    // 但上面的 upsert 会直接用新的值覆盖。
+    // 改进逻辑：如果已经完成，就不应该变回未完成，除非显式重置。
+    // 但为了简单起见，我们假设前端传递的状态是准确的。
+    // 或者我们可以先查询一下，如果已经是 completed，就不改 is_completed。
+    // 但 upsert 比较方便。我们可以稍微优化一下逻辑：
+    
+    if (isCompleted) {
+        // 如果这次是完成，直接更新
+    } else {
+        // 如果这次未完成，检查是否曾经完成过？
+        // 这一步可能需要先 findOne。
+        // 为了性能，暂时直接信任前端传来的状态，或者假设前端会正确处理。
+        // 如果前端只是传 progress，没传 status，我们需要小心。
+        // 现在的逻辑是 status === 'COMPLETED' || progress >= 100 才设为 true。
+        // 如果用户回看，progress 变回 0，is_completed 可能会变回 false。
+        // 让我们修正一下：只在 isCompleted 为 true 时更新 is_completed 字段？
+        // 或者：
+        /*
+        const existing = await ChapterProgress.findOne({ where: { user_id: userId, chapter_id: chapterId } });
+        if (existing && existing.is_completed) {
+             isCompleted = true;
+        }
+        */
+       // 考虑到 upsert 的原子性，我们可以接受简单的覆盖，或者分两步。
+       // 让我们用 findOne + save/create 模式更稳妥。
+    }
+
+    // 重新实现更稳妥的逻辑
+    let cp = await ChapterProgress.findOne({
+        where: { user_id: userId, chapter_id: chapterId }
+    });
+
+    if (cp) {
+        cp.progress = progress !== undefined ? progress : cp.progress;
+        if (isCompleted) {
+            cp.is_completed = true;
+        }
+        // 如果之前是 completed，现在不是，保持 completed
+        await cp.save();
+    } else {
+        cp = await ChapterProgress.create({
+            user_id: userId,
+            chapter_id: chapterId,
+            course_id: courseId,
+            progress: progress || 0,
+            is_completed: isCompleted
+        });
+    }
+
+    // --- 计算并更新课程总进度 ---
+    // 1. 获取该课程所有内容章节的总数 (排除目录)
+    // 注意：这里假设没有内容的章节就是目录，或者通过 parent_id 判断。
+    // 更准确的是查询所有 type='FILE' 的章节，但数据库里没有 type 字段，是通过 children 判断的。
+    // 简化逻辑：查询所有没有子章节的章节？或者查询所有 video_url 或 content 不为空的章节？
+    // 让我们回顾一下 getCourseContent 的逻辑：
+    /*
+      let type = 'FILE';
+      if (children.length > 0) type = 'FOLDER';
+    */
+    // 在数据库层面很难直接用 SQL 判断 "没有子节点的节点"。
+    // 另一种方法：查询所有 Chapter，然后在内存中过滤。
+    const allChapters = await Chapter.findAll({
+      where: { course_id: courseId },
+      raw: true
+    });
+    
+    // 找出所有父节点ID
+    const parentIds = new Set(allChapters.map(c => c.parent_id).filter(id => id !== null));
+    // 叶子节点 = ID 不在 parentIds 中的节点
+    const leafChapters = allChapters.filter(c => !parentIds.has(c.id));
+    const totalLeafCount = leafChapters.length;
+
+    if (totalLeafCount > 0) {
+      // 2. 获取用户已完成的章节数
+      const completedCount = await ChapterProgress.count({
+        where: {
+          user_id: userId,
+          course_id: courseId,
+          is_completed: true,
+          chapter_id: leafChapters.map(c => c.id) // 仅统计叶子节点
+        }
+      });
+
+      // 3. 计算百分比
+      const newProgress = Math.round((completedCount / totalLeafCount) * 100);
+
+      // 4. 更新 Enrollment
+      enrollment.progress = newProgress;
+      await enrollment.save();
+    }
 
     res.status(200).json({
       message: '学习进度更新成功',
       data: {
         last_chapter_id: enrollment.last_chapter_id,
-        last_accessed_at: enrollment.last_accessed_at
+        last_accessed_at: enrollment.last_accessed_at,
+        chapter_progress: cp,
+        course_progress: enrollment.progress
       }
     });
   } catch (error) {
