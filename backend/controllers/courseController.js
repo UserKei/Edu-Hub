@@ -202,8 +202,18 @@ exports.getCourseContent = async (req, res) => {
     });
 
     if (!enrollment) {
+      // Check if user is the teacher
+      if (course.teacher_id === userId) {
+        enrollment = await Enrollment.create({
+          student_id: userId,
+          course_id: id,
+          enrolled_at: new Date(),
+          progress: 0,
+          status: 'IN_PROGRESS'
+        });
+      }
       // Check if course is public and auto-enroll
-      if (course.type === 'PUBLIC') {
+      else if (course.type === 'PUBLIC') {
         enrollment = await Enrollment.create({
           student_id: userId,
           course_id: id,
