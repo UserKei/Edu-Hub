@@ -54,6 +54,13 @@ const handleClick = () => {
 
       <!-- Title -->
       <span class="text-sm font-medium truncate">{{ item.title }}</span>
+
+      <!-- Completion Icon -->
+      <Icon
+         v-if="item.is_completed && !isFolder"
+         icon="mdi:check-circle"
+         class="text-ctp-green ml-auto shrink-0"
+       />
     </div>
 
     <!-- Children (Recursive) -->
