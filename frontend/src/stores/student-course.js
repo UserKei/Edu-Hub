@@ -22,8 +22,19 @@ export const useStudentCourseStore = defineStore('student-course', () => {
 
   // Computed: Progress Percentage
   const progressPercentage = computed(() => {
-    if (!enrollment.value) return 0
-    return enrollment.value.progress || 0
+    if (!chapters.value.length) return 0
+
+    // Get all content chapters (leaf nodes)
+    // Note: flatChapters is already computed below, but we can't use it before it's defined if we keep this order.
+    // However, Vue computed properties are lazy, so referencing flatChapters inside the callback is fine
+    // as long as flatChapters is defined in the same scope.
+    // But flatChapters is defined AFTER this block. Let's move flatChapters definition up or use the helper directly.
+
+    const allFiles = flattenChapters(chapters.value)
+    if (allFiles.length === 0) return 0
+
+    const completedCount = allFiles.filter(c => c.is_completed).length
+    return Math.round((completedCount / allFiles.length) * 100)
   })
 
   // Helper: Flatten chapters to linear list for navigation
@@ -132,6 +143,9 @@ export const useStudentCourseStore = defineStore('student-course', () => {
 
     // Update local state immediately
     currentChapter.value.progress = progress
+    if (progress >= 100) {
+      currentChapter.value.is_completed = true
+    }
 
     // Call debounced API update
     debouncedUpdateProgress(course.value.id, currentChapter.value.id, progress)
