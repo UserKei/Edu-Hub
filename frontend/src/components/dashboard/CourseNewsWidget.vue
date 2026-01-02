@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-ctp-mantle rounded-2xl p-6">
+  <div class="bg-ctp-mantle rounded-2xl p-6 h-full overflow-y-auto custom-scrollbar">
     <h2 class="text-xl font-bold text-ctp-text mb-4">{{ $t('dashboard.news') }}</h2>
     <div class="space-y-4">
       <div v-for="i in 3" :key="i" class="p-3 bg-ctp-surface0 rounded-lg">

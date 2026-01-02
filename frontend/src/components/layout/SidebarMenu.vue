@@ -13,7 +13,7 @@
       :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
     >
       <div class="p-4 flex justify-between items-center border-b border-ctp-surface0">
-        <h2 class="text-xl font-bold text-ctp-blue">Yuki</h2>
+        <h2 class="text-xl font-bold text-ctp-blue">Edu-Hub</h2>
         <button @click="closeSidebar" class="text-ctp-overlay1 hover:text-ctp-red transition-colors">
           <Icon icon="mdi:close" class="text-2xl" />
         </button>

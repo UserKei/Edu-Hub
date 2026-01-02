@@ -1,19 +1,19 @@
 <template>
   <DashboardLayout>
-    <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 h-full">
       <!-- Left Sidebar (Course List) - Hidden on small screens, visible on XL -->
-      <div class="hidden xl:block xl:col-span-1">
+      <div class="hidden xl:block xl:col-span-1 h-full overflow-hidden">
         <CourseListSidebar />
       </div>
 
       <!-- Main Content Area -->
-      <div class="col-span-1 xl:col-span-2 space-y-6">
-        <ContinueLearningList />
-        <CourseFeed />
+      <div class="col-span-1 xl:col-span-2 flex flex-col gap-6 h-full overflow-hidden">
+        <ContinueLearningList class="shrink-0" />
+        <CourseFeed class="flex-1 min-h-0 overflow-hidden" />
       </div>
 
       <!-- Right Sidebar Area -->
-      <div class="col-span-1 xl:col-span-1">
+      <div class="col-span-1 xl:col-span-1 h-full overflow-hidden">
         <CourseNewsWidget />
       </div>
     </div>
