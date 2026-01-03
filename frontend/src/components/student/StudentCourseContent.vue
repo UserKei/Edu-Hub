@@ -21,6 +21,10 @@ const handleTimeUpdate = () => {
   }
 }
 
+const handleVideoEnded = () => {
+  store.updateLearningProgress(100)
+}
+
 // Reset video when chapter changes
 watch(() => chapter.value?.id, () => {
   if (videoRef.value) {
@@ -50,6 +54,7 @@ watch(() => chapter.value?.id, () => {
           controls
           :src="chapter.video_url"
           @timeupdate="handleTimeUpdate"
+          @ended="handleVideoEnded"
         >
           Your browser does not support the video tag.
         </video>

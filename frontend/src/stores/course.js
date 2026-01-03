@@ -5,6 +5,7 @@ export const useCourseStore = defineStore('course', {
   state: () => ({
     publicCourses: [],
     enrolledCourses: [],
+    createdCourses: [],
     isLoading: false,
     searchQuery: ''
   }),
@@ -32,6 +33,24 @@ export const useCourseStore = defineStore('course', {
           method: 'get'
         })
         this.enrolledCourses = response
+        return response
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async fetchCreatedCourses() {
+      this.isLoading = true
+      try {
+        const response = await request({
+          url: '/api/courses/created',
+          method: 'get'
+        })
+        // Reuse enrolledCourses state or add a new one?
+        // For simplicity in MyCoursesView, we can store it in enrolledCourses
+        // BUT the structure is different.
+        // Let's add a new state property 'createdCourses'
+        this.createdCourses = response
         return response
       } finally {
         this.isLoading = false

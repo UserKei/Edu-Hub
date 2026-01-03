@@ -49,8 +49,11 @@ const handleClick = () => {
       </div>
 
       <!-- Type Badge -->
-      <div class="absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium bg-black/50 text-white backdrop-blur-sm">
-        {{ course.type === 'PUBLIC' ? $t('course.type.public') : $t('course.type.private') }}
+      <div
+        class="absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium text-white backdrop-blur-sm"
+        :class="course.status === 'DRAFT' ? 'bg-yellow-600/80' : 'bg-black/50'"
+      >
+        {{ course.status === 'DRAFT' ? $t('course.status.draft') : (course.type === 'PUBLIC' ? $t('course.type.public') : $t('course.type.private')) }}
       </div>
     </div>
 

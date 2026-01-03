@@ -145,10 +145,12 @@ export const useStudentCourseStore = defineStore('student-course', () => {
     currentChapter.value.progress = progress
     if (progress >= 100) {
       currentChapter.value.is_completed = true
+      // Force immediate update for completion
+      _updateLearningProgress(course.value.id, currentChapter.value.id, progress)
+    } else {
+      // Call debounced API update
+      debouncedUpdateProgress(course.value.id, currentChapter.value.id, progress)
     }
-
-    // Call debounced API update
-    debouncedUpdateProgress(course.value.id, currentChapter.value.id, progress)
   }
 
   const setCurrentChapter = (chapterId) => {

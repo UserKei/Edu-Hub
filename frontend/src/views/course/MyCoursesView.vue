@@ -1,23 +1,35 @@
 <script setup>
 import { onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCourseStore } from '@/stores/course'
+import { useAuthStore } from '@/stores/auth'
 import CourseActionToolbar from '@/components/course/CourseActionToolbar.vue'
 import CourseList from '@/components/course/CourseList.vue'
 import CourseCard from '@/components/course/CourseCard.vue'
 import CourseLayout from './CourseLayout.vue'
 
+const router = useRouter()
 const courseStore = useCourseStore()
+const authStore = useAuthStore()
+
+const isTeacher = computed(() => authStore.user?.role === 'TEACHER')
 
 // 注意：API 返回的是选课对象 (Enrollment Object)，其中 'course' 属性包含课程详情。
 // 我们需要将其映射为扁平的课程列表以适配 CourseCard 组件。
 // API 结构参考: [ { id: 1, student_id: 2, course_id: 1, ..., course: { ... } } ]
 const courses = computed(() => {
-  return courseStore.enrolledCourses.map(enrollment => ({
-    ...enrollment.course,
-    // 如果需要，保留选课特定的数据
-    enrollment_id: enrollment.id,
-    progress: enrollment.progress
-  }))
+  if (isTeacher.value) {
+    // 教师：直接返回创建的课程列表
+    return courseStore.createdCourses
+  } else {
+    // 学生：映射选课记录
+    return courseStore.enrolledCourses.map(enrollment => ({
+      ...enrollment.course,
+      // 如果需要，保留选课特定的数据
+      enrollment_id: enrollment.id,
+      progress: enrollment.progress
+    }))
+  }
 })
 
 const isLoading = computed(() => courseStore.isLoading)
@@ -28,6 +40,10 @@ const handleSearch = (query) => {
   courseStore.searchQuery = query
 }
 
+const handleCreate = () => {
+  router.push('/course/new')
+}
+
 const filteredCourses = computed(() => {
   const query = courseStore.searchQuery.toLowerCase()
   if (!query) return courses.value
@@ -36,9 +52,13 @@ const filteredCourses = computed(() => {
 
 onMounted(async () => {
   try {
-    await courseStore.fetchEnrolledCourses()
+    if (isTeacher.value) {
+      await courseStore.fetchCreatedCourses()
+    } else {
+      await courseStore.fetchEnrolledCourses()
+    }
   } catch (error) {
-    console.error('Failed to fetch enrolled courses:', error)
+    console.error('Failed to fetch courses:', error)
   }
 })
 </script>
@@ -47,8 +67,9 @@ onMounted(async () => {
   <CourseLayout>
     <CourseActionToolbar
       :title="$t('course.my_courses.title')"
-      :show-create-button="false"
+      :show-create-button="isTeacher"
       @search="handleSearch"
+      @create="handleCreate"
     />
 
     <CourseList :loading="isLoading" :courses="filteredCourses">
@@ -56,7 +77,7 @@ onMounted(async () => {
         v-for="course in filteredCourses"
         :key="course.id"
         :course="course"
-        :is-enrolled="true"
+        :is-enrolled="!isTeacher"
       />
     </CourseList>
   </CourseLayout>
