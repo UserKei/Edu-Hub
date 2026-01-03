@@ -135,6 +135,21 @@ exports.getEnrolledCourses = async (req, res) => {
   }
 };
 
+// 获取教师创建的课程
+exports.getCreatedCourses = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const courses = await Course.findAll({
+      where: { teacher_id: userId },
+      order: [['created_at', 'DESC']]
+    });
+    res.json(courses);
+  } catch (error) {
+    console.error('Get created courses error:', error);
+    res.status(500).json({ message: '服务器内部错误' });
+  }
+};
+
 // 学生选课
 exports.enrollCourse = async (req, res) => {
   try {

@@ -6,6 +6,8 @@ const { verifyToken } = require('../middleware/authMiddleware');
 
 // 学生端路由 (需认证) - 必须在 /:id 之前定义
 router.get('/enrolled', verifyToken, courseController.getEnrolledCourses);
+// 教师端路由 (需认证)
+router.get('/created', verifyToken, courseController.getCreatedCourses);
 
 // 课程路由
 router.post('/', verifyToken, courseController.createCourse);
