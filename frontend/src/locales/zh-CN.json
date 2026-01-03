@@ -1,5 +1,6 @@
 {
   "auth": {
+    "logout": "退出登录",
     "login": {
       "title": "登录 EduHub",
       "submit": "登录",
