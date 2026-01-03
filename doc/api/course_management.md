@@ -452,7 +452,58 @@
 
 ---
 
-## 11. Enroll Course (Student)
+## 11. Get Created Courses (Teacher)
+
+- **URL**: `GET /api/courses/created`
+- **Headers**: `Authorization: Bearer <token>`
+
+### 请求体
+*(无请求体)*
+
+### 成功响应 (200 OK)
+```json
+[
+  {
+    "id": 1,
+    "title": "2025年全栈开发实战",
+    "description": "从零开始学习 Node.js, Vue 3 和 MySQL，构建一个完整的在线教育平台。",
+    "cover_image": "https://example.com/cover.jpg",
+    "type": "PUBLIC",
+    "status": "DRAFT",
+    "teacher_id": 1,
+    "created_at": "2025-12-21T10:00:00.000Z",
+    "updated_at": "2025-12-21T10:00:00.000Z"
+  }
+]
+```
+
+### 错误响应 (401 Unauthorized)
+
+```json
+{
+  "message": "未提供认证令牌"
+}
+```
+
+### 错误响应 (403 Forbidden)
+
+```json
+{
+  "message": "令牌无效或已过期"
+}
+```
+
+### 错误响应 (500 Internal Server Error)
+
+```json
+{
+  "message": "服务器内部错误"
+}
+```
+
+---
+
+## 12. Enroll Course (Student)
 
 - **URL**: `POST /api/courses/:id/enroll`
 - **Headers**: `Authorization: Bearer <token>`
@@ -520,7 +571,7 @@
 
 ---
 
-## 12. Get Course Content (Student)
+## 13. Get Course Content (Student)
 
 - **URL**: `GET /api/courses/:id/content`
 - **Headers**: `Authorization: Bearer <token>`
@@ -577,7 +628,7 @@
 
 ---
 
-## 13. Update Learning Progress
+## 14. Update Learning Progress
 
 - **URL**: `POST /api/courses/:courseId/chapters/:chapterId/progress`
 - **Content-Type**: `application/json`

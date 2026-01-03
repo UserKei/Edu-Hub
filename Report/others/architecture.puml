@@ -1,0 +1,48 @@
+@startuml architecture
+skinparam componentStyle uml2
+skinparam packageStyle rectangle
+
+package "客户端 (Frontend)" as Frontend {
+    [Vue.js 3 Views] as Vue
+    [UI Components] as Components
+    [Pinia Store] as Pinia
+    [Axios Request] as Axios
+}
+
+package "服务端 (Backend)" as Backend {
+    [Express App] as Express
+    [API Routes] as Router
+    [Auth Middleware] as Auth
+    [Controllers] as Controller
+    [Sequelize Models] as Model
+}
+
+package "基础设施 (Infrastructure)" as Infra {
+    database "MySQL Database" as MySQL
+    folder "File System (Uploads)" as FS
+}
+
+' Layout: Packages Left to Right
+Frontend -[hidden]right-> Backend
+Backend -[hidden]right-> Infra
+
+' Client Internal (Top to Bottom)
+Vue --> Components
+Vue --> Pinia
+Pinia --> Axios
+
+' Server Internal (Top to Bottom)
+Express --> Router
+Router --> Auth
+Auth --> Controller
+Controller --> Model
+
+' Infrastructure Internal (Top to Bottom)
+MySQL -[hidden]down-> FS
+
+' Cross System
+Axios ..> Express : HTTP/JSON
+Model ..> MySQL : SQL
+Controller ..> FS : Stream
+
+@enduml

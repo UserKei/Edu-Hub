@@ -1,0 +1,158 @@
+@startuml Class
+
+package "Auth Context" {
+  class User {
+    +id: Integer
+    +username: String
+    +password: String
+    +nickname: String
+    +avatar: String
+    +role: Enum {STUDENT, TEACHER, ADMIN, SUPER_ADMIN}
+    +status: Enum {ACTIVE, BANNED}
+    +created_at: DateTime
+    +updated_at: DateTime
+    __
+    +register(username, password, nickname, role, inviteCode)
+    +login(username, password)
+    +getProfile() (TODO)
+    +updateProfile(nickname, avatar) (TODO)
+    +getUsers(page, limit, search, role)
+    +updateStatus(id, status)
+    +resetPassword(id)
+  }
+
+  class InviteCode {
+    +id: Integer
+    +code: String
+    +is_used: Boolean
+    +created_by: Integer
+    +expires_at: DateTime
+    +created_at: DateTime
+    __
+    +generate(expires_at)
+    +list()
+  }
+}
+
+package "Course Context" {
+  class Course {
+    +id: Integer
+    +title: String
+    +description: Text
+    +cover_image: String
+    +type: Enum {PUBLIC, PRIVATE}
+    +access_code: String
+    +status: Enum {DRAFT, PUBLISHED, OFFLINE, ARCHIVED, BANNED}
+    +ban_reason: String
+    +teacher_id: Integer
+    +created_at: DateTime
+    +updated_at: DateTime
+    __
+    +create(title, description, cover_image, type, access_code)
+    +update(id, data)
+    +publish(id)
+    +getList()
+    +getDetail(id)
+  }
+
+  class Chapter {
+    +id: Integer
+    +title: String
+    +content: Text
+    +video_url: String
+    +resource_url: String
+    +resource_name: String
+    +order: Integer
+    +course_id: Integer
+    +parent_id: Integer
+    __
+    +add(course_id, title, content, video_url, parent_id)
+    +update(id, data)
+    +delete(id)
+    +getList(course_id)
+  }
+
+  class Enrollment {
+    +id: Integer
+    +student_id: Integer
+    +course_id: Integer
+    +grade: Float
+    +progress: Integer
+    +joined_at: DateTime
+    +last_chapter_id: Integer
+    +last_accessed_at: DateTime
+    __
+    +enroll(course_id, access_code)
+    +getEnrolledCourses()
+    +getContinueLearning()
+  }
+
+  class ChapterProgress {
+    +id: Integer
+    +user_id: Integer
+    +chapter_id: Integer
+    +course_id: Integer
+    +is_completed: Boolean
+    +progress: Integer
+    +updated_at: DateTime
+    __
+    +updateProgress(courseId, chapterId, progress, status)
+  }
+}
+
+package "Forum Context" {
+  class Post {
+    +id: Integer
+    +title: String
+    +content: Text
+    +published: Boolean
+    +author_id: Integer
+    +course_id: Integer
+    +chapter_id: Integer
+    +created_at: DateTime
+    +updated_at: DateTime
+    __
+    +create(title, content, course_id, chapter_id)
+    +delete(id)
+    +getList(page, limit, course_id)
+    +getDetail(id)
+  }
+
+  class Comment {
+    +id: Integer
+    +content: Text
+    +author_id: Integer
+    +post_id: Integer
+    +created_at: DateTime
+    __
+    +create(post_id, content)
+    +delete(id)
+  }
+}
+
+' Relationships
+
+' User relationships
+User "1" -- "0..*" Course : creates >
+User "1" -- "0..*" Enrollment : studies >
+User "1" -- "0..*" ChapterProgress : tracks >
+User "1" -- "0..*" Post : authors >
+User "1" -- "0..*" Comment : writes >
+User "1" -- "0..*" InviteCode : generates >
+
+' Course relationships
+Course "1" -- "0..*" Chapter : contains >
+Course "1" -- "0..*" Enrollment : has >
+Course "1" -- "0..*" ChapterProgress : tracks >
+Course "1" -- "0..*" Post : has topics >
+
+' Chapter relationships
+Chapter "1" -- "0..*" Chapter : sub-chapters >
+Chapter "1" -- "0..*" ChapterProgress : progress of >
+Chapter "1" -- "0..*" Post : related to >
+Chapter "1" -- "0..*" Enrollment : last accessed in <
+
+' Forum relationships
+Post "1" -- "0..*" Comment : has >
+
+@enduml
