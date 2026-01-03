@@ -1120,6 +1120,21 @@ const buildChapterTree = (chapters,
     \end{itemize}
 \end{itemize}
 
+\subsection{文档与数据库 (\texttt{doc/} \& \texttt{database/})}
+
+\begin{itemize}
+    \item \textbf{API 文档 (\texttt{doc/api/})}：
+    \begin{itemize}
+        \item 包含系统核心模块的接口定义文档，如 \texttt{login.md} (登录)、\\ \texttt{course\_management.md} (课程管理) 等，详细描述了请求参数与响应格式。
+    \end{itemize}
+    \item \textbf{数据库脚本 (\texttt{database/})}：
+    \begin{itemize}
+        \item \texttt{schema.sql}: 数据库表结构定义脚本。
+        \item \texttt{seed.sql}: 初始测试数据填充脚本。
+        \item \texttt{main.dbml}: 数据库模型设计文件 (DBML 格式)。
+    \end{itemize}
+\end{itemize}
+
 \section{单元测试方案}
 
 本项目的单元测试遵循 \textbf{"Mock Everything" (全模拟)} 原则，旨在隔离外部依赖（如数据库、网络），专注于验证业务逻辑的正确性。
