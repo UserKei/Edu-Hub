@@ -48,6 +48,9 @@
     "type": {
       "public": "Public",
       "private": "Private"
+    },
+    "status": {
+      "draft": "Draft"
     }
   },
   "student": {

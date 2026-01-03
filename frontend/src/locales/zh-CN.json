@@ -48,6 +48,9 @@
     "type": {
       "public": "公开",
       "private": "私有"
+    },
+    "status": {
+      "draft": "草稿"
     }
   },
   "student": {
