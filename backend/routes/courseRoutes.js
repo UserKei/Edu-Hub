@@ -8,7 +8,7 @@ const { verifyToken } = require('../middleware/authMiddleware');
 router.get('/enrolled', verifyToken, courseController.getEnrolledCourses);
 
 // 课程路由
-router.post('/', courseController.createCourse);
+router.post('/', verifyToken, courseController.createCourse);
 router.get('/', courseController.getCourseList);
 router.get('/:id', courseController.getCourseDetail);
 router.put('/:id', courseController.updateCourse);
