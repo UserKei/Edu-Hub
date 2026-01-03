@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,10 @@
     "sequelize": "^6.37.7"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "autocannon": "^8.0.0",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "sequelize-mock": "^0.10.2",
+    "supertest": "^7.1.4"
   }
 }
